@@ -9,8 +9,8 @@
 --   * Faerie Fire works in Bear and Cat Form too, free (6-second cooldown);
 --     the old Feral version is gone (checked with /tac probe locale, Nov 2026).
 --   * Omen of Clarity is trained at 20; Tiger's Fury is gone (the Shifting
---     Power talent gives Energy instead).
---   * Bears: Lacerate (42) and Primal Bite (talent) for threat.
+--     Power talent gives Energy instead). Berserk isn't in Forever's trees.
+--   * Bears: Lacerate (talent, 25) and Primal Bite (talent) for threat.
 --   * Balance: cheaper Wrath, Eclipse (Wrath speeds up Starfire), Insect
 --     Swarm is a talent.
 --
@@ -28,7 +28,7 @@ detect: Cat Form
 tree: Feral
 prefer: Shifting Power, Shredding Attacks, Savage Fury
 default: yes
-notes: Cat Form from 20 (Bear Form from 10, Wrath and Moonfire before): Rake, Claw (Shred from behind), Rip and Ferocious Bite to spend, Faerie Fire on cooldown, Shifting Power and Berserk.
+notes: Cat Form from 20 (Bear Form from 10, Wrath and Moonfire before): Rake, Claw (Shred from behind), Rip and Ferocious Bite to spend, Faerie Fire on cooldown, Shifting Power for Energy.
 
 [keypress]
 /cast [noform] Cat Form
@@ -66,7 +66,6 @@ notes: Cat Form from 20 (Bear Form from 10, Wrath and Moonfire before): Rake, Cl
     /cast Maul
     /cast Wrath
 1x /cast Shifting Power
-    /cast Berserk
     /cast Claw
     /cast Maul
 
@@ -85,7 +84,6 @@ notes: Cat Form from 20 (Bear Form from 10, Wrath and Moonfire before): Rake, Cl
 /cast Mark of the Wild @missing Mark of the Wild
 /cast Thorns @missing Thorns
 /cast Omen of Clarity @missing Omen of Clarity
-/cast Berserk
 /cast Shifting Power
 /cast Faerie Fire @nodebuff Faerie Fire
 /cast Rake @nodebuff Rake
@@ -113,7 +111,7 @@ class: DRUID
 detect: Primal Bite
 tree: Feral
 prefer: Primal Bite, Natural Reaction, Thick Hide
-notes: Tanking in Dire Bear Form (Bear Form before 40): Faerie Fire to pull, Lacerate (42) and Primal Bite for threat, Maul with spare Rage, Swipe and Demoralizing Roar for groups.
+notes: Tanking in Dire Bear Form (Bear Form before 40): Faerie Fire to pull, Lacerate (25) and Primal Bite (40) for threat, Maul with spare Rage, Swipe and Demoralizing Roar for groups.
 
 [keypress]
 /cast [noform] Dire Bear Form
@@ -159,7 +157,6 @@ notes: Tanking in Dire Bear Form (Bear Form before 40): Faerie Fire to pull, Lac
 /cast Mark of the Wild @missing Mark of the Wild
 /cast Thorns @missing Thorns
 /cast Omen of Clarity @missing Omen of Clarity
-/cast Berserk
 /cast Swipe @enemies 3
 /cast Demoralizing Roar @nodebuff Demoralizing Roar
 /cast Faerie Fire @nodebuff Faerie Fire

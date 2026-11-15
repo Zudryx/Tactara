@@ -43,7 +43,7 @@ local DEFAULT_DURATIONS = {
   ["Aspect of the Wild"] = 7200, ["Trueshot Aura"] = 7200,
   ["Hunter's Mark"] = 120, ["Serpent Sting"] = 15, ["Scorpid Sting"] = 20, ["Viper Sting"] = 8,
   -- Rogue (finishers: average length, since combo points are hidden)
-  ["Slice and Dice"] = 15, ["Rupture"] = 12, ["Venom"] = 15, ["Expose Armor"] = 30,
+  ["Slice and Dice"] = 15, ["Rupture"] = 12, ["Expose Armor"] = 30,
   -- Priest
   ["Power Word: Fortitude"] = 1800, ["Inner Fire"] = 600, ["Divine Spirit"] = 1800, ["Shadowform"] = 7200,
   ["Shadow Word: Pain"] = 18, ["Devouring Plague"] = 24, ["Holy Fire"] = 10, ["Vampiric Embrace"] = 30,
@@ -132,7 +132,7 @@ local BUILDERS = {
 }
 local FINISHERS = {
   ["Eviscerate"] = true, ["Slice and Dice"] = true, ["Rupture"] = true, ["Kidney Shot"] = true,
-  ["Expose Armor"] = true, ["Venom"] = true, ["Ferocious Bite"] = true, ["Rip"] = true,
+  ["Expose Armor"] = true, ["Death Mark"] = true, ["Ferocious Bite"] = true, ["Rip"] = true,
 }
 local counted = 0
 

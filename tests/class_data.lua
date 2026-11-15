@@ -84,7 +84,8 @@ D.BY_LEVEL = {
     {60, "Bane of Doom"},
   },
   -- Classic trainer levels plus Blizzard's Forever deep dive (Revive 12,
-  -- Omen of Clarity 20, Lacerate 42, Faerie Fire works in forms)
+  -- Omen of Clarity 20, Faerie Fire works in forms). Lacerate is a Feral
+  -- talent (25) in the live game, not a trainer spell.
   DRUID = {
     {1, "Wrath"}, {1, "Healing Touch"}, {1, "Mark of the Wild"}, {4, "Moonfire"}, {4, "Rejuvenation"},
     {6, "Thorns"}, {8, "Entangling Roots"}, {10, "Bear Form"}, {10, "Maul"}, {10, "Growl"},
@@ -92,7 +93,7 @@ D.BY_LEVEL = {
     {12, "Enrage"}, {14, "Bash"}, {16, "Swipe"}, {18, "Faerie Fire"}, {18, "Hibernate"},
     {20, "Cat Form"}, {20, "Claw"}, {20, "Rip"}, {20, "Starfire"}, {20, "Omen of Clarity"},
     {22, "Shred"}, {24, "Rake"}, {26, "Dash"}, {30, "Tranquility"}, {32, "Ferocious Bite"},
-    {36, "Frenzied Regeneration"}, {40, "Dire Bear Form"}, {40, "Hurricane"}, {42, "Lacerate"}, {44, "Barkskin"},
+    {36, "Frenzied Regeneration"}, {40, "Dire Bear Form"}, {40, "Hurricane"}, {44, "Barkskin"},
   },
 }
 
@@ -113,7 +114,7 @@ D.TALENTS = {
   sub = { {20, "Premeditation"}, {25, "Ghostly Strike"}, {30, "Preparation"}, {30, "Hemorrhage"}, {40, "Death Mark"} },
   shadow = { {20, "Mind Flay"}, {25, "Vampiric Embrace"}, {30, "Silence"}, {40, "Shadowform"} },
   disc = { {30, "Penance"} },
-  holypri = { {20, "Holy Nova"}, {25, "Binding Heal"}, {40, "Prayer of Mending"} },
+  holypri = { {20, "Holy Nova"}, {25, "Holy Binding"}, {40, "Prayer of Mending"} },
   ele = { {15, "Elemental Alacrity"}, {25, "Call of Thunder"}, {30, "Earthbound"}, {30, "Lightning Overload"}, {40, "Lava Burst"} },
   enh = { {20, "Shamanistic Focus"}, {25, "Stormstrike"}, {35, "Maelstrom Weapon"}, {40, "Rage of the Farseer"} },
   resto = { {20, "Water Shield"}, {25, "Mana Tide Totem"}, {40, "Riptide"} },
@@ -123,8 +124,8 @@ D.TALENTS = {
   affli = { {30, "Siphon Life"}, {40, "Wrack"} },
   demo = { {20, "Fel Domination"}, {30, "Demonic Sacrifice"}, {40, "Demonic Pact"} },
   destro = { {20, "Shadowburn"}, {30, "Conflagrate"}, {30, "Bane of Havoc"}, {40, "Incinerate"} },
-  cat = { {20, "Feral Charge"}, {25, "Shifting Power"}, {40, "Berserk"} },
-  bear = { {20, "Feral Charge"}, {25, "Primal Bite"}, {35, "Natural Reaction"}, {40, "Berserk"} },
+  cat = { {20, "Feral Charge"}, {25, "Lacerate"}, {25, "Shifting Power"} },
+  bear = { {20, "Feral Charge"}, {25, "Lacerate"}, {25, "Primal Bite"}, {35, "Natural Reaction"} },
   balance = { {25, "Insect Swarm"}, {30, "Eclipse"}, {40, "Moonkin Form"} },
   restodru = { {25, "Swiftmend"}, {40, "Wild Growth"} },
 }
@@ -150,7 +151,7 @@ D.CONDITIONAL = {
   WARRIOR = { Execute = true, Overpower = true, Revenge = true, ["Victory Rush"] = true },
   PALADIN = { ["Hammer of Wrath"] = true, Exorcism = true, ["Holy Wrath"] = true },
   HUNTER = { ["Mongoose Bite"] = true, Counterattack = true },
-  ROGUE = { Riposte = true, Eviscerate = true, ["Slice and Dice"] = true, Rupture = true, Venom = true,
+  ROGUE = { Riposte = true, Eviscerate = true, ["Slice and Dice"] = true, Rupture = true, ["Death Mark"] = true,
     ["Kidney Shot"] = true, ["Expose Armor"] = true, Ambush = true, Garrote = true, ["Cheap Shot"] = true },
   SHAMAN = { ["Fire Nova"] = true },
   DRUID = { Rip = true, ["Ferocious Bite"] = true, Shred = true },

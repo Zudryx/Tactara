@@ -8,8 +8,10 @@
 -- 2026). Forever changes that matter here:
 --   * Curse of Agony is now Bane of Agony (one Bane per target, and it no
 --     longer competes with a utility Curse).
---   * Affliction: Wrack (40) is a drain that makes your other Shadow DoTs
---     hit harder for 6 seconds.
+--   * Affliction: Wrack (40) is a 6-second channel. Since the November 10
+--     hotfix your Corruption, Siphon Life and Bane of Agony tick twice as
+--     fast while you channel it (it no longer makes them hit harder), so it
+--     comes right after those three are up.
 --   * Demonology: Searing Pain brands the target for your demon (Demonic
 --     Brand); demons scale with your gear.
 --   * Destruction: Conflagrate and Incinerate (40, stronger on Immolated
@@ -45,6 +47,7 @@ notes: DoTs: Bane of Agony to pull, Corruption, Immolate and Siphon Life, then W
     /cast Shadow Bolt
 /cast Siphon Life
     /cast Shadow Bolt
+/cast Wrack
 
 [loop]
 3x /cast Shadow Bolt

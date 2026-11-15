@@ -2,6 +2,17 @@
 
 Each `## x.y.z` section becomes the release notes for that version.
 
+## 0.19.1
+Rotation review for mid-November: the WoW Forever hotfixes up to November 13 and the class guides.
+- **Assassination Rogue:** Venom is a passive now: Shank sets it off and your poisons hit harder for a few seconds. The rotation stops trying to cast Venom as a finisher, and the helper shows Shank whenever it's ready.
+- **Subtlety Rogue:** the helper waits for 5 combo points before showing Death Mark (it's a finisher, and it stores more damage with more points).
+- **Survival Hunter:** once you take Lone Wolf, the helper stops asking you to call your pet.
+- **Feral Druid (Cat and Bear):** Berserk isn't in WoW Forever, so it's gone from the rotations. Lacerate is a talent you can take at 25 (not a level 42 spell); the notes say so.
+- **Fire Mage:** the helper no longer shows Pyroblast all the time. Pyroblast pays off with Heating Up, which the helper can't count, so it now shows Combustion, Fire Blast and Fireball, and the key still mixes in Scorch and Pyroblast.
+- **Affliction Warlock:** after the November 10 hotfix, Wrack makes Corruption, Siphon Life and Bane of Agony tick twice as fast while you channel it. From 40 the opener ends with Wrack, right after your DoTs are up.
+- **Holy Priest:** in WoW Forever it's Holy Binding, a passive (your Flash Heal on someone else heals you too), not a Binding Heal spell. The self-heal line that tried to cast it is gone.
+- Talent builds haven't changed.
+
 ## 0.19.0
 - **A cleaner look for the helper popup and the key bar.** Every icon has a thin frame. The best spell now, and your key's next press, are framed in Tactara's cyan (the color of its logo and the glow). The interrupt and defensive slots are framed in red and orange, with an outlined caption in the same color under them. PULL is in cyan too.
 - **Display look:** Standard (all of the above) or **Minimal**: just the icons, with a thin red or orange edge left on the interrupt and defensive slots so you can tell them apart. Settings page (Displays) or `/tac look minimal`.

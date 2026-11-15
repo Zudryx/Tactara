@@ -8,8 +8,10 @@
 -- list on warcraft.wiki.gg (checked November 2026). Forever changes that
 -- matter here:
 --   * Shank (level 24): a cheap off-hand strike that gives back Energy.
---   * Assassination: Venom (30) is a finisher to keep up, Mutilate (40)
---     the dagger builder. Slice and Dice and Venom come before Eviscerate.
+--   * Assassination: Venom (30) is passive since the November 2 changes:
+--     Shank sets it off (stronger poisons for a few seconds), so Shank goes
+--     on cooldown. Mutilate (40) is the dagger builder. Slice and Dice comes
+--     before Eviscerate.
 --   * Combat: Blade Flurry and Adrenaline Rush; Riposte after a parry.
 --   * Subtlety: Hemorrhage builds, Rupture and Ghostly Strike, Premeditation
 --     from Stealth.
@@ -93,10 +95,10 @@ notes: Sinister Strike to build, Slice and Dice and Eviscerate to spend, Shank (
 ns.RegisterBuiltin([=[
 name: Rogue - Assassination
 class: ROGUE
-detect: Venom
+detect: Mutilate
 tree: Assassination
 weapon: dual
-notes: Poisons. Builds with Mutilate (daggers, 40) or Sinister Strike, keeps Venom (30) and Slice and Dice up, Eviscerate with what's left. Cold Blood on cooldown.
+notes: Poisons. Builds with Mutilate (daggers, 40) or Sinister Strike, keeps Slice and Dice up, Eviscerate with what's left. Shank and Cold Blood on cooldown: from 30, Shank also sets off Venom for stronger poisons.
 
 [keypress]
 /cast [nocombat,harm,nodead,stealth] Cheap Shot
@@ -115,9 +117,6 @@ notes: Poisons. Builds with Mutilate (daggers, 40) or Sinister Strike, keeps Ven
 [loop]
 4x /cast Mutilate
     /cast Sinister Strike
-1x /cast Venom
-    /cast Mutilate
-    /cast Sinister Strike
 1x /cast Slice and Dice
     /cast Mutilate
     /cast Sinister Strike
@@ -132,10 +131,9 @@ notes: Poisons. Builds with Mutilate (daggers, 40) or Sinister Strike, keeps Ven
     /cast Sinister Strike
 
 [priority]
-/cast Venom @nodebuff Venom @combo 2
 /cast Slice and Dice @missing Slice and Dice @combo 1
-/cast Cold Blood
 /cast Shank
+/cast Cold Blood
 /cast Eviscerate @combo 5
 /cast Mutilate
 /cast Sinister Strike
@@ -158,7 +156,7 @@ class: ROGUE
 detect: Hemorrhage
 tree: Subtlety
 weapon: dual
-notes: Opens from Stealth with Premeditation and Cheap Shot, builds with Hemorrhage (Sinister Strike before 30), keeps Rupture and Slice and Dice up, Ghostly Strike and Death Mark on cooldown.
+notes: Opens from Stealth with Premeditation and Cheap Shot, builds with Hemorrhage (Sinister Strike before 30), keeps Rupture and Slice and Dice up, Ghostly Strike on cooldown, Death Mark (40) at 5 combo points.
 
 [keypress]
 /cast [harm,nodead,stealth] Premeditation
@@ -199,7 +197,7 @@ notes: Opens from Stealth with Premeditation and Cheap Shot, builds with Hemorrh
 [priority]
 /cast Slice and Dice @missing Slice and Dice @combo 1
 /cast Rupture @nodebuff Rupture @combo 4
-/cast Death Mark
+/cast Death Mark @combo 5
 /cast Ghostly Strike
 /cast Shank
 /cast Eviscerate @combo 5

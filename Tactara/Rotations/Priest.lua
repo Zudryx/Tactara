@@ -10,7 +10,8 @@
 --     at 30 and Shadow Word: Death (new) at 32.
 --   * Shadowform now allows every non-healing spell.
 --   * Discipline gets Penance (channel: damage or healing), Holy gets
---     Binding Heal and Prayer of Mending.
+--     Holy Binding (a passive: your Flash Heal on someone else heals you
+--     too) and Prayer of Mending.
 --
 -- Discipline and Holy have no healing button: healing needs you to pick who
 -- to heal, so those two rotations are the solo damage you level with
@@ -141,7 +142,7 @@ notes: Solo damage for a Discipline Priest: Holy Fire and Shadow Word: Pain up, 
 ns.RegisterBuiltin([=[
 name: Priest - Holy
 class: PRIEST
-detect: Binding Heal
+detect: Prayer of Mending
 tree: Holy
 notes: Solo damage for a Holy Priest: Holy Fire and Shadow Word: Pain up, Mind Blast on cooldown, Smite to fill, Holy Nova on groups. Group healing is up to you.
 
@@ -192,7 +193,6 @@ notes: Solo damage for a Holy Priest: Holy Fire and Shadow Word: Pain up, Mind B
 [defensive]
 /cast Power Word: Shield @health 70
 /cast Desperate Prayer @health 30
-/cast [@player] Binding Heal @health 50
 /cast [@player] Flash Heal @health 40
 /cast [@player] Renew @health 60
 # Crowd control is off by default. Remove the # to turn it on:

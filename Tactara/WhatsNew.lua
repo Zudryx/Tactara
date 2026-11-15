@@ -8,6 +8,17 @@
 local ADDON, ns = ...
 
 ns.WHATS_NEW = {
+  { version = "0.19.1", lines = {
+    "Rotation review for mid-November: the WoW Forever hotfixes up to November 13 and the class guides.",
+    "- **Assassination Rogue:** Venom is a passive now: Shank sets it off and your poisons hit harder for a few seconds. The rotation stops trying to cast Venom as a finisher, and the helper shows Shank whenever it's ready.",
+    "- **Subtlety Rogue:** the helper waits for 5 combo points before showing Death Mark (it's a finisher, and it stores more damage with more points).",
+    "- **Survival Hunter:** once you take Lone Wolf, the helper stops asking you to call your pet.",
+    "- **Feral Druid (Cat and Bear):** Berserk isn't in WoW Forever, so it's gone from the rotations. Lacerate is a talent you can take at 25 (not a level 42 spell); the notes say so.",
+    "- **Fire Mage:** the helper no longer shows Pyroblast all the time. Pyroblast pays off with Heating Up, which the helper can't count, so it now shows Combustion, Fire Blast and Fireball, and the key still mixes in Scorch and Pyroblast.",
+    "- **Affliction Warlock:** after the November 10 hotfix, Wrack makes Corruption, Siphon Life and Bane of Agony tick twice as fast while you channel it. From 40 the opener ends with Wrack, right after your DoTs are up.",
+    "- **Holy Priest:** in WoW Forever it's Holy Binding, a passive (your Flash Heal on someone else heals you too), not a Binding Heal spell. The self-heal line that tried to cast it is gone.",
+    "- Talent builds haven't changed.",
+  } },
   { version = "0.19.0", lines = {
     "- **A cleaner look for the helper popup and the key bar.** Every icon has a thin frame. The best spell now, and your key's next press, are framed in Tactara's cyan (the color of its logo and the glow). The interrupt and defensive slots are framed in red and orange, with an outlined caption in the same color under them. PULL is in cyan too.",
     "- **Display look:** Standard (all of the above) or **Minimal**: just the icons, with a thin red or orange edge left on the interrupt and defensive slots so you can tell them apart. Settings page (Displays) or `/tac look minimal`.",
@@ -23,15 +34,5 @@ ns.WHATS_NEW = {
     "- **Hide while mounted:** the helper popup and the key bar step aside while you're on a mount or a flight path, and come back when you get off or a fight starts. Off until you turn it on: settings page (Displays) or `/tac mounted on`. While the displays are unlocked they stay, so you can still move them.",
     "- **Feral Druid (Cat and Bear):** the rotations used Faerie Fire (Feral), which WoW Forever removed, so the pull and the armor debuff were skipped. In Forever plain Faerie Fire works in Bear and Cat Form (free, 6-second cooldown), and the rotations use that now: to pull, in the opener and to keep the debuff up.",
     "- **Games in other languages:** Feral Charge now finds the right spell (in Forever the talent is the charge itself, in Cat and Bear Form), and a few spell IDs with old names were dropped. On English games nothing changes.",
-  } },
-  { version = "0.17.0", lines = {
-    "- **After the fight:** a couple of seconds after combat ends, Tactara checks the buffs your rotation keeps up, for every class: Blessings, Righteous Fury and your aura, Fortitude and Inner Fire, Mark of the Wild and Thorns, Arcane Intellect and your armor, Demon Armor, aspects, Lightning or Water Shield, Battle Shout (when you have the rage left over), your pet, and a Rogue's poisons or a Shaman's weapon imbue. Anything missing or running low shows under the helper for 30 seconds and in chat (the same line at most every 2 minutes). Seals are left out: they'd run out before the next pull anyway. No target needed.",
-    "- **Running low counts too,** before the pull and after the fight: an hour-long Blessing under 5 minutes, a 30-minute buff under 2, a 5 to 10 minute one under 1, Battle Shout under 30 seconds. The line says how long is left, like *Blessing of Might (4 min left)*. Seals still only show when they're missing or about to drop. Auras, aspects and forms never run low.",
-    "- **A sound for buff reminders,** off until you pick one: settings page (Reminders) or `/tac sound buffs ready`.",
-    "- The setting is now **Buffs before and after a fight** (settings page, Reminders); `/tac buffs on` / `helper` / `off` works like `/tac prepull`.",
-    "- **A buff you click off (or that's dispelled, or lost when you die) is noticed now.** In a fight the game hides your buffs, so Tactara times them from your casts, and a timer can't see a buff come off. Once the fight is over, when the game is showing your buffs again, its \"not there\" wins over the timer: the after-the-fight check and the before-the-pull line list it, and the opener puts it back up.",
-    "- When the game hides your buffs, Tactara times them from your casts. Now a buff that replaces another (one Seal for another, one Blessing, aura, aspect, armor or shield for another) ends the old one's timer too, so Tactara doesn't think your old aspect is still up.",
-    "- `/tac probe reminders` shows each buff's time left and what the after-the-fight check sees.",
-    "- Tactara still only tells you; you cast the buff.",
   } },
 }

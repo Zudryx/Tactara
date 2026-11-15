@@ -124,10 +124,11 @@ notes: Fireball to fill, Fire Blast on cooldown, Scorch to stack the debuff, Pyr
 /cast Arcane Explosion @enemies 3
 /cast Combustion
 /cast Fire Blast
-/cast Pyroblast
-/cast Scorch
 /cast Fireball
 /cast Shoot
+# Pyroblast (best with 3 Heating Up) and Scorch (for Improved Scorch) are
+# left to the key: the helper can't count stacks, and above Fireball they'd
+# be shown every time.
 
 [interrupt]
 /cast Counterspell
