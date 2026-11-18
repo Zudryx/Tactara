@@ -226,7 +226,7 @@ detect: Mortal Strike      # auto-pick this rotation once you know this spell
 - `@ifmissing Buff`: only cast if that buff is missing or about to run out. This is checked out of combat, before each fight.
 - `[priority]` section (rotation helper): one spell per line, best first. Live checks: `@missing Buff` (not on you), `@nodebuff Debuff` (your debuff not on the target), `@enemies 3` (at least 3 enemies nearby). If WoW hides what a check needs, that line is skipped.
 - `[interrupt]`: interrupts, best first (helper + interrupt key). `[defensive]`: defensives with checks like `@health 30`.
-- `@health 35`: only when your health is below 35%.
+- `@health 35`: only when your health is below 35%. `@health above 60`: only when it's 60% or more.
 - `@creature Undead, Demon`: only when the target is one of these (Exorcism, Holy Wrath).
 - `@nopet`: only when your pet is missing or dead (Call Pet, summons).
 - `@combo 4`: only with at least 4 combo points (the game's number if it shows it, otherwise Tactara's count of your builders).

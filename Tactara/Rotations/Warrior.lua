@@ -89,9 +89,17 @@ notes: Two-hander in Battle Stance. Overpower and Mortal Strike first, Slam to f
 /cast Sweeping Strikes @enemies 2
 /cast Thunder Clap @enemies 3
 /cast Overpower
+# Spearing Strike (talent): Icy Veins puts it above Mortal Strike against
+# Giants and Dragonkin. Battle Stance only.
+/cast Spearing Strike @creature Giant, Dragonkin
 /cast Mortal Strike
 /cast Execute
 /cast Victory Rush
+# Reckless Swings (talent) costs 25% of your base health for extra Rage on
+# your next 4 swings. Icy Veins: use it when you need Rage and have health
+# to spare. It sits below the big hitters, so it shows when they're waiting
+# on Rage or cooldown. Helper only: the key can't check your health.
+/cast Reckless Swings @health above 60
 /cast Rend @nodebuff Rend
 /cast Slam
 /cast Cleave @enemies 2
@@ -177,6 +185,9 @@ notes: Dual wield. Battle Stance while leveling; once you learn Whirlwind (36) i
 /cast Thunder Clap @enemies 3
 /cast Overpower
 /cast Victory Rush
+# Reckless Swings (talent): extra Rage for 25% of your base health, when you
+# have health to spare (Icy Veins). Helper only: the key can't check health.
+/cast Reckless Swings @health above 60
 /cast Rend @nodebuff Rend
 /cast Cleave @enemies 2
 /cast Heroic Strike
@@ -255,6 +266,9 @@ notes: One-hander + shield in Defensive Stance (from level 10). Shield Slam and 
 /cast Shield Slam
 /cast Revenge
 /cast Victory Rush
+# Reckless Swings (talent): extra Rage for 25% of your base health, when you
+# have health to spare (Icy Veins). Helper only: the key can't check health.
+/cast Reckless Swings @health above 60
 /cast Thunder Clap @nodebuff Thunder Clap
 /cast Rend @nodebuff Rend
 /cast Sunder Armor

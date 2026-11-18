@@ -11,6 +11,8 @@
 --   * Weapon imbues last 60 minutes: put yours on before you go out.
 --   * Elemental: Lava Burst (40) hits harder on Flame Shocked targets.
 --   * Enhancement: Stormstrike every 8 seconds, Rage of the Farseer (40).
+--     Icy Veins' leveling build (November 13) skips Rage of the Farseer and
+--     takes Water Shield at 46 for Mana instead.
 --   * Restoration: Water Shield and Riptide.
 --
 -- Restoration has no healing button: healing needs you to pick who to heal,
@@ -27,13 +29,14 @@ detect: Stormstrike
 tree: Enhancement
 weapon: two-hand
 default: yes
-notes: Melee. Lightning Shield and Searing Totem up, Stormstrike on cooldown, Flame Shock and Earth Shock between, Rage of the Farseer at 40. Put your weapon imbue (Rockbiter, later Windfury) on yourself: it lasts an hour.
+notes: Melee. Lightning Shield (Water Shield once you take it, 46 in the leveling build) and Searing Totem up, Stormstrike on cooldown, Flame Shock and Earth Shock between, Rage of the Farseer if you take it. Put your weapon imbue (Rockbiter, later Windfury) on yourself: it lasts an hour.
 
 [keypress]
 /startattack [harm,nodead]
 
 [opener]
-/cast Lightning Shield @ifmissing Lightning Shield
+/cast Water Shield @ifmissing Water Shield
+    /cast Lightning Shield @ifmissing Lightning Shield @unless Water Shield
     /cast Searing Totem
 /cast Searing Totem
     /cast Stormstrike
@@ -73,7 +76,10 @@ notes: Melee. Lightning Shield and Searing Totem up, Stormstrike on cooldown, Fl
     /cast Stormstrike
 
 [priority]
-/cast Lightning Shield @missing Lightning Shield
+# Icy Veins' leveling build takes Water Shield at 46 for Mana; it replaces
+# Lightning Shield (you can only have one).
+/cast Water Shield @missing Water Shield
+/cast Lightning Shield @missing Lightning Shield @unless Water Shield
 /cast Strength of Earth Totem @missing Strength of Earth Totem
 /cast Windfury Totem @missing Windfury Totem
 /cast Searing Totem @missing Searing Totem

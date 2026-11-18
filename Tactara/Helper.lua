@@ -219,7 +219,11 @@ function ns.CheckLive(c)
   elseif c.kind == "health" then
     local pct = ns.PlayerHealthPct()
     if not pct then return nil end
-    return pct < (tonumber(c.arg:match("%d+")) or 35)
+    local n = tonumber(c.arg:match("%d+")) or 35
+    -- "@health above 60" (or "> 60"): only with that much health or more
+    local arg = c.arg:lower()
+    if arg:find("above", 1, true) or arg:find(">", 1, true) then return pct >= n end
+    return pct < n
   elseif c.kind == "creature" then
     local ok, kind = pcall(function()
       if not UnitExists("target") then return false end

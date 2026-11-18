@@ -99,9 +99,11 @@ D.BY_LEVEL = {
 
 -- spec -> { {level, talent spell}, ... }  (talent points start at 10)
 D.TALENTS = {
-  arms = { {30, "Sweeping Strikes"}, {40, "Mortal Strike"} },
-  fury = { {40, "Bloodthirst"} },
-  prot = { {30, "Last Stand"}, {40, "Shield Slam"}, {30, "Concussion Blow"} },
+  -- Spearing Strike (Arms) and Reckless Swings (Fury) are row 4 (level 25);
+  -- the Icy Veins builds take Reckless Swings at 31 Fury, 56 Arms, 59 Protection.
+  arms = { {25, "Spearing Strike"}, {30, "Sweeping Strikes"}, {40, "Mortal Strike"}, {56, "Reckless Swings"} },
+  fury = { {31, "Reckless Swings"}, {40, "Bloodthirst"} },
+  prot = { {30, "Last Stand"}, {40, "Shield Slam"}, {30, "Concussion Blow"}, {59, "Reckless Swings"} },
   ret = { {20, "Seal of Command"}, {25, "Sacred Arbiter"}, {30, "Repentance"}, {40, "Twist of Light"} },
   protpal = { {20, "Improved Seal of Fury"}, {25, "Swift Judgement"}, {30, "Templar's Bulwark"}, {35, "Holy Shield"} },
   holypal = { {20, "Voice of Truth"}, {25, "Divine Favor"}, {30, "Holy Shock"}, {40, "Light's Vigil"} },
@@ -116,7 +118,8 @@ D.TALENTS = {
   disc = { {30, "Penance"} },
   holypri = { {20, "Holy Nova"}, {25, "Holy Binding"}, {40, "Prayer of Mending"} },
   ele = { {15, "Elemental Alacrity"}, {25, "Call of Thunder"}, {30, "Earthbound"}, {30, "Lightning Overload"}, {40, "Lava Burst"} },
-  enh = { {20, "Shamanistic Focus"}, {25, "Stormstrike"}, {35, "Maelstrom Weapon"}, {40, "Rage of the Farseer"} },
+  -- Rage of the Farseer: level 60 build; Water Shield: Icy Veins leveling build (46)
+  enh = { {20, "Shamanistic Focus"}, {25, "Stormstrike"}, {35, "Maelstrom Weapon"}, {40, "Rage of the Farseer"}, {46, "Water Shield"} },
   resto = { {20, "Water Shield"}, {25, "Mana Tide Totem"}, {40, "Riptide"} },
   frost = { {20, "Ice Lance"}, {25, "Ice Block"}, {30, "Cold Snap"}, {30, "Fingers of Frost"}, {40, "Ice Barrier"} },
   fire = { {20, "Pyroblast"}, {25, "Heating Up"}, {30, "Blast Wave"}, {40, "Combustion"} },

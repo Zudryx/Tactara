@@ -33,6 +33,7 @@
 --   @nodebuff Rend               only when your debuff isn't on the target
 --   @enemies 3                   only with at least 3 enemies nearby (nameplates)
 --   @health 35                   only when your health is below 35%
+--   @health above 60             only when your health is 60% or more
 --   @creature Undead, Demon      only when the target is one of these creature types
 --   @nopet                       only when your pet is missing or dead
 --   @combo 4                     only with at least 4 combo points

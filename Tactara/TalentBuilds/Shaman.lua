@@ -17,8 +17,8 @@ ns.RegisterTalentBuild([=[
 name: Shaman - Enhancement
 class: SHAMAN
 tree: Enhancement
-source: Icy Veins leveling build (9/34/8), November 2026
-notes: Stormstrike at 25, Maelstrom Weapon from 46 and Rage of the Farseer at 51, with Restoration for Tidal Focus and Mindfulness.
+source: Icy Veins leveling build (11/29/11), updated November 13, 2026
+notes: Built for Mana. Shamanistic Focus at 20, Stormstrike at 25, Improved Stormstrike at 30 and Mindfulness at 38, one point in Maelstrom Weapon at 43, Water Shield at 46 and Elemental Focus at 57.
 order:
 Thundering Strikes 5
 Mental Dexterity 3
@@ -30,16 +30,18 @@ Stormstrike
 Improved Ghost Wolf 2
 Flurry 2
 Improved Stormstrike 2
-Mental Quickness 2
 Spirit Weapons
 Tidal Focus 5
 Mindfulness 3
-Flurry 3
-Maelstrom Weapon 5
-Rage of the Farseer
+Mental Quickness 2
+Maelstrom Weapon
+Totemic Focus 2
+Water Shield
 Concussion 5
 Elemental Devastation 3
-Call of Flame
+Call of Flame 2
+Elemental Focus
+Flurry 3
 ]=])
 
 ns.RegisterTalentBuild([=[

@@ -1059,6 +1059,56 @@ do
   check(r.sections.priority[2].cmd == "/cast [@player] Flash Heal", "[@player] kept in the command")
 end
 
+-- @health above N, and the Warrior talents Spearing Strike / Reckless Swings
+do
+  playerHP = 80
+  check(ns.CheckLive({ kind = "health", arg = "above 60" }) == true, "@health above 60 at 80%")
+  check(ns.CheckLive({ kind = "health", arg = "> 60" }) == true, "@health > 60 at 80%")
+  check(ns.CheckLive({ kind = "health", arg = "35" }) == false, "@health 35 still means below")
+  playerHP = 60
+  check(ns.CheckLive({ kind = "health", arg = "above 60" }) == true, "@health above 60 at exactly 60%")
+  playerHP = 45
+  check(ns.CheckLive({ kind = "health", arg = "above 60" }) == false, "@health above 60 at 45%")
+  hpHidden = true
+  check(ns.CheckLive({ kind = "health", arg = "above 60" }) == nil, "@health above: unknown when hidden")
+  hpHidden = false; playerHP = 100
+  local r = ns.Parse("name: t\n[priority]\n/cast Reckless Swings @health above 60")
+  check(#r.warnings == 0 and r.sections.priority[1].conds[1].arg == "above 60", "@health above parses")
+  local env = { isKnown = function() return true end, hasBuff = function() return false end }
+  local function find(list, spell)
+    for i, e in ipairs(list) do if e.spell == spell then return i, e end end
+  end
+  local function keyText(c)
+    local t = {}
+    for _, st in ipairs(c.steps) do t[#t + 1] = st.text end
+    return table.concat(t, "\n")
+  end
+  for _, name in ipairs({ "Warrior - Arms", "Warrior - Fury", "Warrior - Protection" }) do
+    local c = ns.Compile(ns.Parse(ns.GetRotationText(name)), "main", env)
+    local i, e = find(c.priority, "Reckless Swings")
+    check(i and #e.live == 1 and e.live[1].kind == "health" and e.live[1].arg == "above 60",
+      name .. ": Reckless Swings only above 60% health")
+    check(not keyText(c):find("Reckless Swings", 1, true), name .. ": Reckless Swings stays out of the key")
+  end
+  local arms = ns.Compile(ns.Parse(ns.GetRotationText("Warrior - Arms")), "main", env)
+  local si, se = find(arms.priority, "Spearing Strike")
+  local mi = find(arms.priority, "Mortal Strike")
+  check(si and mi and si < mi and se.live[1].kind == "creature" and se.live[1].arg == "Giant, Dragonkin",
+    "Arms: Spearing Strike above Mortal Strike on Giants and Dragonkin")
+  check(not keyText(arms):find("Spearing Strike", 1, true), "Arms: Spearing Strike stays out of the key")
+  -- Enhancement: Water Shield replaces Lightning Shield once you have it
+  local hasWS = false
+  local enhEnv = { isKnown = function(sp) return sp ~= "Water Shield" or hasWS end, hasBuff = function() return false end }
+  local enh = ns.Compile(ns.Parse(ns.GetRotationText("Shaman - Enhancement")), "main", enhEnv)
+  check(find(enh.priority, "Lightning Shield") and not find(enh.priority, "Water Shield")
+    and keyText(enh):find("Lightning Shield", 1, true), "Enhancement before Water Shield: Lightning Shield")
+  hasWS = true
+  enh = ns.Compile(ns.Parse(ns.GetRotationText("Shaman - Enhancement")), "main", enhEnv)
+  check(find(enh.priority, "Water Shield") and not find(enh.priority, "Lightning Shield")
+    and keyText(enh):find("Water Shield", 1, true) and not keyText(enh):find("Lightning Shield", 1, true),
+    "Enhancement with Water Shield: Water Shield, no Lightning Shield")
+end
+
 -- two rotations on one tree: the one whose "prefer:" talents you took wins
 do
   local realList, realBuild = ns.ListRotations, ns.ReadBuild
@@ -1482,12 +1532,15 @@ do
       check(want and T.Split(b, tree) == want, ("%s split %s (source says %s)"):format(b.name, T.Split(b, tree), tostring(want)))
       local main = 0
       for t, tr in ipairs(tree.trees) do if tr.name == b.tree then main = sim.perTree[t] or 0 end end
-      -- leveling builds go 31 deep; a level 60 build's tree is at least its biggest
+      -- every build's tree has the most points; leveling builds go 31 deep,
+      -- except Icy Veins' Enhancement build since November 13 (29: Mana talents
+      -- in Restoration and Elemental instead of Rage of the Farseer)
       local most = 0
       for _, n in pairs(sim.perTree) do most = math.max(most, n) end
+      check(main == most, ("%s: most points in %s (%d)"):format(b.name, tostring(b.tree), main))
       if T.IsLevel60(b) then
-        check(main == most and b.name:find("%(level 60%)$"), ("%s: most points in %s (%d)"):format(b.name, tostring(b.tree), main))
-      else
+        check(b.name:find("%(level 60%)$"), b.name .. ": level 60 in the name")
+      elseif b.name ~= "Shaman - Enhancement" then
         check(main >= 31, ("%s: 31+ points in %s (%d)"):format(b.name, tostring(b.tree), main))
       end
     end
