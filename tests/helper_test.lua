@@ -2918,5 +2918,49 @@ do
     .. table.concat(missing, ", "))
 end
 
+-- A display at a size other than 100% stays where you put it across logins
+-- (the size goes on before the saved position; reported by a player in 0.19.1)
+do
+  local function FakeFrame()
+    local f = { scale = 1 }
+    function f:SetScale(v) self.scale = v end
+    function f:GetScale() return self.scale end
+    function f:ClearAllPoints() self.pt = nil end
+    function f:SetPoint(p, rel, rp, x, y) self.pt = { p, rel, rp, x, y } end
+    function f:GetPoint() if self.pt then return self.pt[1], self.pt[2], self.pt[3], self.pt[4], self.pt[5] end end
+    function f:SetClampedToScreen() end
+    function f:SetMovable() end
+    function f:SetScript() end
+    return f
+  end
+  local saved = { TactaraCharDB.display, TactaraCharDB.helperPos, TactaraCharDB.displayScale, TactaraCharDB.helperScale,
+    ns.display, ns.helperPopup }
+  for _, scale in ipairs({ 1.5, 0.75, 1 }) do
+    TactaraCharDB.display = { point = "CENTER", relPoint = "CENTER", x = 120, y = -240 }
+    TactaraCharDB.helperPos = { point = "BOTTOMLEFT", relPoint = "BOTTOMLEFT", x = 300, y = 200 }
+    TactaraCharDB.displayScale, TactaraCharDB.helperScale = scale, scale
+    for login = 1, 3 do
+      -- what Core.lua does at login: make both displays, then apply the sizes
+      ns.display, ns.helperPopup = FakeFrame(), FakeFrame()
+      ns.MakeMovable(ns.display, "display", 0, -180)
+      ns.MakeMovable(ns.helperPopup, "helperPos", 0, -110)
+      ns.ApplyDisplayScales()
+    end
+    local d, h = ns.display, ns.helperPopup
+    check(d.scale == scale and h.scale == scale, ("size %s is applied"):format(scale))
+    check(d.pt[4] == 120 and d.pt[5] == -240 and TactaraCharDB.display.x == 120 and TactaraCharDB.display.y == -240,
+      ("key bar at size %s stays put after 3 logins (%s, %s)"):format(scale, tostring(d.pt[4]), tostring(d.pt[5])))
+    check(h.pt[4] == 300 and h.pt[5] == 200 and TactaraCharDB.helperPos.x == 300 and TactaraCharDB.helperPos.y == 200,
+      ("helper popup at size %s stays put after 3 logins (%s, %s)"):format(scale, tostring(h.pt[4]), tostring(h.pt[5])))
+  end
+  -- changing the size from the options still keeps the display in place on screen
+  TactaraCharDB.displayScale = 2
+  ns.ApplyDisplayScales()
+  check(ns.display.scale == 2 and ns.display.pt[4] == 60 and ns.display.pt[5] == -120,
+    "size slider: the key bar keeps its spot on screen")
+  TactaraCharDB.display, TactaraCharDB.helperPos, TactaraCharDB.displayScale, TactaraCharDB.helperScale,
+    ns.display, ns.helperPopup = saved[1], saved[2], saved[3], saved[4], saved[5], saved[6]
+end
+
 print(fails == 0 and "\nHELPER TEST PASSED" or ("\n" .. fails .. " FAILURE(S)"))
 os.exit(fails == 0 and 0 or 1)

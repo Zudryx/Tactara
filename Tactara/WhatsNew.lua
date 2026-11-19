@@ -8,6 +8,9 @@
 local ADDON, ns = ...
 
 ns.WHATS_NEW = {
+  { version = "0.19.2", lines = {
+    "- **Fixed:** if the key bar or the helper popup was set to a size other than 100%, it crept a little across the screen on every login or `/reload`. It now stays where you put it. Thanks to the player who found the cause and sent the fix.",
+  } },
   { version = "0.19.1", lines = {
     "Rotation review for mid-November: the WoW Forever hotfixes up to November 13 and the class guides.",
     "- **Assassination Rogue:** Venom is a passive now: Shank sets it off and your poisons hit harder for a few seconds. The rotation stops trying to cast Venom as a finisher, and the helper shows Shank whenever it's ready.",
@@ -29,15 +32,5 @@ ns.WHATS_NEW = {
     "- **Display look:** Standard (all of the above) or **Minimal**: just the icons, with a thin red or orange edge left on the interrupt and defensive slots so you can tell them apart. Settings page (Displays) or `/tac look minimal`.",
     "- Tactara's windows (rotation editor, talent planner, what's new, key setup) show the logo and the name in cyan in their title. Menus, buttons and the settings page stay the game's own, so they look like the rest of your UI.",
     "- No gameplay changes.",
-  } },
-  { version = "0.18.0", lines = {
-    "- **Your own limits:** on the settings page (Reminders), or with commands:",
-    "  - **Buffs running low:** Early (twice as long left), Normal, Late (half) or Only when missing. `/tac buffs low early`",
-    "  - **Low on ammo under** this many shots (200 by default). `/tac supplies ammo 300`",
-    "  - **Low on Soul Shards under** this many (2 by default). `/tac supplies shards 3`",
-    "  - At 0, ammo and shards only count when you're out.",
-    "- **Hide while mounted:** the helper popup and the key bar step aside while you're on a mount or a flight path, and come back when you get off or a fight starts. Off until you turn it on: settings page (Displays) or `/tac mounted on`. While the displays are unlocked they stay, so you can still move them.",
-    "- **Feral Druid (Cat and Bear):** the rotations used Faerie Fire (Feral), which WoW Forever removed, so the pull and the armor debuff were skipped. In Forever plain Faerie Fire works in Bear and Cat Form (free, 6-second cooldown), and the rotations use that now: to pull, in the opener and to keep the debuff up.",
-    "- **Games in other languages:** Feral Charge now finds the right spell (in Forever the talent is the charge itself, in Cat and Bear Form), and a few spell IDs with old names were dropped. On English games nothing changes.",
   } },
 }

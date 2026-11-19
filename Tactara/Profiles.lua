@@ -64,7 +64,7 @@ function Pr.Apply(settings)
   end
   for _, f in ipairs({ ns.display, ns.helperPopup }) do
     if f and f.posKey then
-      f:SetScale(tonumber(TactaraCharDB[f.posKey == "display" and "displayScale" or "helperScale"]) or 1)
+      f:SetScale(tonumber(TactaraCharDB[ns.SCALE_KEYS[f.posKey]]) or 1)
       ns.RestorePosition(f)
     end
   end

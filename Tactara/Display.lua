@@ -60,8 +60,15 @@ function ns.RestorePosition(f)
   f:SetPoint(pos.point or "CENTER", UIParent, pos.relPoint or "CENTER", pos.x or f.posDefaultX, pos.y or f.posDefaultY)
 end
 
+-- Each display's saved size. A saved position is in the display's own scale,
+-- so the size goes on before the position (the other way round, the position
+-- was scaled again on every login and the display crept across the screen).
+ns.SCALE_KEYS = { display = "displayScale", helperPos = "helperScale" }
+
 function ns.MakeMovable(f, key, defaultX, defaultY)
   f.posKey, f.posDefaultX, f.posDefaultY = key, defaultX, defaultY
+  local scaleKey = ns.SCALE_KEYS[key]
+  if scaleKey then f:SetScale(tonumber(TactaraCharDB[scaleKey]) or 1) end
   ns.RestorePosition(f)
   f:SetClampedToScreen(true)
   f:SetMovable(true)
