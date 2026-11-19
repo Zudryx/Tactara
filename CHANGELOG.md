@@ -4,6 +4,7 @@ Each `## x.y.z` section becomes the release notes for that version.
 
 ## 0.19.2
 - **Fixed:** if the key bar or the helper popup was set to a size other than 100%, it crept a little across the screen on every login or `/reload`. It now stays where you put it. Thanks to the player who found the cause and sent the fix.
+- **Fixed:** `/tac probe` caused a Lua error in dungeon fights, where the game hides your target's name from addons. It now shows the name as HIDDEN, says which dungeon you're in, and finishes the report. Anything Tactara prints to chat shows hidden values as "(hidden)" instead of erroring.
 
 ## 0.19.1
 Rotation review for mid-November: the WoW Forever hotfixes up to November 13 and the class guides.

@@ -432,6 +432,36 @@ end
 inCombat = false
 targetAuras["Rend"] = nil
 
+-- 18b) in a dungeon fight the game hides your target's name. Text built from a
+-- hidden value stays hidden, and the game's table.concat refuses it (reported
+-- in 0.19.2: "invalid value (secret) at index 1 in table for 'concat'").
+do
+  local realConcat, realSecret = table.concat, issecretvalue
+  issecretvalue = function(v) return type(v) == "string" and v:find("SECRET", 1, true) ~= nil end
+  table.concat = function(t, ...)
+    for i, v in ipairs(t) do
+      if issecretvalue(v) then error(("invalid value (secret) at index %d in table for 'concat'"):format(i), 2) end
+    end
+    return realConcat(t, ...)
+  end
+  UnitName = function(u) return u == "target" and "SECRET" or "Zud" end
+  GetInstanceInfo = function() return "Hall of Thanes", "party" end
+  inCombat = true
+  chat = {}
+  local okP, eP = pcall(SlashCmdList.TACTARA, "probe")
+  local out = realConcat(chat, "\n")
+  check(okP, "/tac probe in a dungeon fight with the target's name hidden: " .. tostring(eP))
+  check(out:find("target: HIDDEN", 1, true) and out:find("in Hall of Thanes (party)", 1, true),
+    "probe header: target HIDDEN, instance named: " .. out:sub(1, 200))
+  check(not out:find("SECRET", 1, true), "no hidden value reaches chat")
+  chat = {}
+  local okPr = pcall(ns.Print, "name:", "SECRET", 5)
+  check(okPr and chat[1] and chat[1]:find("name: (hidden) 5", 1, true), "ns.Print shows a hidden value as (hidden)")
+  table.concat, issecretvalue = realConcat, realSecret
+  UnitName, GetInstanceInfo = nil, nil
+  inCombat = false
+end
+
 ---------------------------------------------------------------------------
 -- 19) priority mode (best spell right now)
 ---------------------------------------------------------------------------

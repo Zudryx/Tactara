@@ -66,9 +66,18 @@ end
 
 function ns.Probe()
   local inCombat = InCombatLockdown() or (UnitAffectingCombat and UnitAffectingCombat("player"))
-  ns.Print(("probe - %s, target: %s. Please screenshot this and send it over.")
-    :format(inCombat and "|cffff5555IN COMBAT|r" or "|cff00ff00out of combat|r",
-      tostring(UnitName and UnitName("target") or "none")))
+  -- in dungeon fights the game hides your target's name from addons
+  local target = UnitName and UnitName("target")
+  target = IsHidden(target) and "HIDDEN" or tostring(target or "none")
+  local where = "open world"
+  if GetInstanceInfo then
+    local ok, name, kind = pcall(GetInstanceInfo)
+    if ok and kind and kind ~= "none" and not IsHidden(name) and not IsHidden(kind) then
+      where = ("in %s (%s)"):format(tostring(name), tostring(kind))
+    end
+  end
+  ns.Print(("probe - %s, %s, target: %s. Please screenshot this and send it over.")
+    :format(inCombat and "|cffff5555IN COMBAT|r" or "|cff00ff00out of combat|r", where, target))
 
   -- talents / build
   Check("talents (Tactara reader)", function()

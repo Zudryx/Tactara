@@ -12,9 +12,23 @@ ns.compiled = {}       -- .main / .aoe compiled sequences
 
 local PREFIX = "|cff4fc3f7Tactara|r: "
 
+-- Text for chat. Something the game hides from addons (in dungeon fights, for
+-- example your target's name) can't be joined into a message, so it shows as
+-- "(hidden)" instead of causing a Lua error.
+local function Printable(v)
+  local ok, text = pcall(tostring, v)
+  if not ok then return "(hidden)" end
+  if issecretvalue then
+    local okS, secret = pcall(issecretvalue, text)
+    if not okS or secret then return "(hidden)" end
+  end
+  if not pcall(table.concat, { text }) then return "(hidden)" end
+  return text
+end
+
 function ns.Print(...)
   local parts = {}
-  for i = 1, select("#", ...) do parts[#parts + 1] = tostring((select(i, ...))) end
+  for i = 1, select("#", ...) do parts[#parts + 1] = Printable((select(i, ...))) end
   DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. table.concat(parts, " "))
 end
 
