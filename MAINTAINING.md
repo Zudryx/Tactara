@@ -56,6 +56,10 @@ Merging the pull request publishes the release automatically (see `.github/workf
 
 If the game's interface version changes, update `## Interface:` in `Tactara/Tactara.toc`. The number comes from `/dump select(4, GetBuildInfo())` in game, or from patch notes and other Forever addons. Then bump the version, as in step 4.
 
+## Values the game hides
+
+In some fights (dungeons especially) WoW Forever hides values from addons: your target's name and ID, auras, cooldowns, range and more. A hidden value doesn't always cause an error when used: joining it into text just gives more hidden text. Using it as a table key, comparing it, or putting it into `table.concat` is a Lua error. So check with `ns.IsSecret(v)` (Core.lua) before using a game value as a key, in a comparison or in chat text, and treat a hidden value as "can't tell". Don't rely on an error to tell you it's hidden. `ns.Print` already shows hidden values as "(hidden)". Tests copy the game's rule with an `issecretvalue` stub and a timer table that refuses hidden keys (see `tests/helper_test.lua`).
+
 ## CurseForge uploads
 
 Each new release is also uploaded to CurseForge (project 1795307, set by `## X-Curse-Project-ID` in `Tactara/Tactara.toc`) by `.github/scripts/curseforge_upload.py`, tagged with the WoW Forever game version that matches `## Interface` (16001 = 1.60.1) and with that version's CHANGELOG section. It needs the `CF_API_KEY` repository secret; without it the upload is skipped with a notice. To test the token without uploading, run the Release workflow by hand (Actions > Release > Run workflow) with **CurseForge: check**. If an upload fails, fix the cause and run it with **upload**.

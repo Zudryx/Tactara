@@ -5,23 +5,30 @@
 
 local ADDON, ns = ...
 
-ns.VERSION = "0.19.2"
+ns.VERSION = "0.19.3"
 ns.builtin = {}        -- [name] = rotation text shipped with the addon
 ns.builtinOrder = {}   -- names in load order
 ns.compiled = {}       -- .main / .aoe compiled sequences
 
 local PREFIX = "|cff4fc3f7Tactara|r: "
 
+-- Is this something the game hides from addons (a "secret" value)? Ask the
+-- game: using a hidden value doesn't always fail (joining it into text just
+-- gives more hidden text), but using that as a table key or in a comparison
+-- is a Lua error.
+function ns.IsSecret(v)
+  if not issecretvalue then return false end
+  local ok, secret = pcall(issecretvalue, v)
+  return not ok or secret == true
+end
+
 -- Text for chat. Something the game hides from addons (in dungeon fights, for
 -- example your target's name) can't be joined into a message, so it shows as
 -- "(hidden)" instead of causing a Lua error.
 local function Printable(v)
+  if ns.IsSecret(v) then return "(hidden)" end
   local ok, text = pcall(tostring, v)
-  if not ok then return "(hidden)" end
-  if issecretvalue then
-    local okS, secret = pcall(issecretvalue, text)
-    if not okS or secret then return "(hidden)" end
-  end
+  if not ok or ns.IsSecret(text) then return "(hidden)" end
   if not pcall(table.concat, { text }) then return "(hidden)" end
   return text
 end
@@ -243,15 +250,16 @@ end
 -- true = trust "not there", false = the game hides it, nil = can't tell.
 function ns.NoteAuraSeen(aura)
   if ns.auraLookupsWork or InCombatLockdown() or aura == nil then return end
-  local ok = pcall(function() return aura.name .. "" end)
-  if ok then ns.auraLookupsWork = true end
+  local ok, name = pcall(function() return aura.name end)
+  if ok and not ns.IsSecret(name) and type(name) == "string" then ns.auraLookupsWork = true end
 end
 
 local function SeesAnyBuff()
   if not (C_UnitAuras and C_UnitAuras.GetAuraDataByIndex) then return false end
   local ok, a = pcall(C_UnitAuras.GetAuraDataByIndex, "player", 1, "HELPFUL")
   if not ok or a == nil then return false end
-  return (pcall(function() return a.name .. "" end))
+  local okN, name = pcall(function() return a.name end)
+  return okN and not ns.IsSecret(name) and type(name) == "string"
 end
 
 function ns.AuraReadable(name)

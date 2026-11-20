@@ -2,6 +2,10 @@
 
 Each `## x.y.z` section becomes the release notes for that version.
 
+## 0.19.3
+- **Fixed:** a Lua error when you cast a debuff Tactara keeps a timer for (Serpent Sting, Hunter's Mark, Rend and others) while the game hides your target's ID from addons, which it does in some fights. The helper also missed its next step on that cast. Timers now fall back to "your current target", and a cast always moves the helper on. Thanks to the player who tracked down the cause.
+- The same kind of hidden value is now handled everywhere Tactara reads one: your target's creature type, combo points, buff names, cooldowns and range. When the game hides one, Tactara treats it as "can't tell" instead of guessing or erroring.
+
 ## 0.19.2
 - **Fixed:** if the key bar or the helper popup was set to a size other than 100%, it crept a little across the screen on every login or `/reload`. It now stays where you put it. Thanks to the player who found the cause and sent the fix.
 - **Fixed:** `/tac probe` caused a Lua error in dungeon fights, where the game hides your target's name from addons. It now shows the name as HIDDEN, says which dungeon you're in, and finishes the report. Anything Tactara prints to chat shows hidden values as "(hidden)" instead of erroring.

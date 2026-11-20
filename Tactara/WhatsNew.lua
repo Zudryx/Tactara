@@ -8,6 +8,10 @@
 local ADDON, ns = ...
 
 ns.WHATS_NEW = {
+  { version = "0.19.3", lines = {
+    "- **Fixed:** a Lua error when you cast a debuff Tactara keeps a timer for (Serpent Sting, Hunter's Mark, Rend and others) while the game hides your target's ID from addons, which it does in some fights. The helper also missed its next step on that cast. Timers now fall back to \"your current target\", and a cast always moves the helper on. Thanks to the player who tracked down the cause.",
+    "- The same kind of hidden value is now handled everywhere Tactara reads one: your target's creature type, combo points, buff names, cooldowns and range. When the game hides one, Tactara treats it as \"can't tell\" instead of guessing or erroring.",
+  } },
   { version = "0.19.2", lines = {
     "- **Fixed:** if the key bar or the helper popup was set to a size other than 100%, it crept a little across the screen on every login or `/reload`. It now stays where you put it. Thanks to the player who found the cause and sent the fix.",
     "- **Fixed:** `/tac probe` caused a Lua error in dungeon fights, where the game hides your target's name from addons. It now shows the name as HIDDEN, says which dungeon you're in, and finishes the report. Anything Tactara prints to chat shows hidden values as \"(hidden)\" instead of erroring.",
@@ -27,11 +31,5 @@ ns.WHATS_NEW = {
     "- **Enhancement Shaman talent build:** Icy Veins changed its leveling build on November 13 to save Mana: one point in Maelstrom Weapon at 43, Water Shield at 46 and Elemental Focus at 57 instead of five Maelstrom Weapon points and Rage of the Farseer. Tactara's build follows it. If you follow the old version, Tactara asks before switching. The rotation now keeps Water Shield up once you have it, in place of Lightning Shield. The level 60 build hasn't changed.",
     "- The other talent builds still match Icy Veins.",
     "- **Your own rotations:** `@health above 60` shows a line only when your health is 60% or more (`@health 35` still means below 35%).",
-  } },
-  { version = "0.19.0", lines = {
-    "- **A cleaner look for the helper popup and the key bar.** Every icon has a thin frame. The best spell now, and your key's next press, are framed in Tactara's cyan (the color of its logo and the glow). The interrupt and defensive slots are framed in red and orange, with an outlined caption in the same color under them. PULL is in cyan too.",
-    "- **Display look:** Standard (all of the above) or **Minimal**: just the icons, with a thin red or orange edge left on the interrupt and defensive slots so you can tell them apart. Settings page (Displays) or `/tac look minimal`.",
-    "- Tactara's windows (rotation editor, talent planner, what's new, key setup) show the logo and the name in cyan in their title. Menus, buttons and the settings page stay the game's own, so they look like the rest of your UI.",
-    "- No gameplay changes.",
   } },
 }

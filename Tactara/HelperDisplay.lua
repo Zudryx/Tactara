@@ -46,8 +46,11 @@ function ns.IconCooldown(spell)
   if not (C_Spell and C_Spell.GetSpellCooldown) then return nil end
   local ok, start, dur = pcall(function()
     local cd = C_Spell.GetSpellCooldown(spell)
-    if type(cd) ~= "table" or cd.isOnGCD then return 0, 0 end
-    local st, du = (cd.startTime or 0) + 0, (cd.duration or 0) + 0   -- errors if hidden
+    if ns.IsSecret(cd) then error("hidden") end
+    if type(cd) ~= "table" then return 0, 0 end
+    if ns.IsSecret(cd.isOnGCD) or ns.IsSecret(cd.startTime) or ns.IsSecret(cd.duration) then error("hidden") end
+    if cd.isOnGCD then return 0, 0 end
+    local st, du = (cd.startTime or 0) + 0, (cd.duration or 0) + 0
     if du <= 1.5 or st <= 0 or st + du <= GetTime() then return 0, 0 end
     return st, du
   end)
@@ -61,8 +64,8 @@ function ns.IconInRange(spell)
   local ok, r = pcall(function()
     if not UnitExists("target") then return nil end
     local v = C_Spell.IsSpellInRange(spell, "target")
-    if v == nil then return nil end
-    return v and true or false                    -- errors if hidden
+    if ns.IsSecret(v) or v == nil then return nil end   -- nil: the game hides it
+    return v and true or false
   end)
   if ok then return r end
   return nil

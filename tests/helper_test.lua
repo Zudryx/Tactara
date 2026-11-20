@@ -521,6 +521,49 @@ guid = "Creature-B"; ns.trackerFrame._scripts.OnEvent(ns.trackerFrame, "PLAYER_T
 check(pick() == "Rend", "B has no Rend")
 guid = "Creature-A"; ns.trackerFrame._scripts.OnEvent(ns.trackerFrame, "PLAYER_TARGET_CHANGED")
 check(pick() == "Slam", "back on A: Rend still ticking")
+-- hidden target IDs (reported in 0.19.2: Tracker.lua:207 "attempted to index a
+-- table that cannot be indexed with secret keys"). Joining a hidden GUID into
+-- text doesn't fail, it gives more hidden text, and the game refuses hidden
+-- table keys. Here the timer table refuses them the same way.
+do
+  local function upvalue(fn, want)
+    for i = 1, 80 do
+      local n, v = debug.getupvalue(fn, i)
+      if n == nil then return nil end
+      if n == want then return v end
+    end
+  end
+  local tracked = upvalue(ns.TrackCast, "tracked")
+  local H = upvalue(ns.OnPlayerCast, "H")
+  check(tracked and tracked.target and H, "test can reach the timer table and helper state")
+  local realSecret = issecretvalue
+  issecretvalue = function(v) return type(v) == "string" and v:find("SECRET", 1, true) ~= nil end
+  local function refuse(_, k)
+    if issecretvalue(k) then error("attempted to index a table that cannot be indexed with secret keys", 2) end
+  end
+  setmetatable(tracked.target, { __index = refuse,
+    __newindex = function(t, k, v) refuse(t, k); rawset(t, k, v) end })
+  guid = "SECRET-GUID"; ns.trackerFrame._scripts.OnEvent(ns.trackerFrame, "PLAYER_TARGET_CHANGED")
+  local okE, eE = pcall(evf._scripts.OnEvent, evf, "UNIT_SPELLCAST_SUCCEEDED", "player", "guid", IDS.Rend)
+  check(okE, "casting Rend with the target's ID hidden: no error (" .. tostring(eE) .. ")")
+  local okR, left = pcall(ns.TrackedRemaining, "target", "Rend")
+  check(okR and type(left) == "number" and left > 0, "Rend timer kept for the current target: " .. tostring(left))
+  local okP, picked = pcall(pick)
+  check(okP and picked == "Slam", "helper sees Rend ticking, next is Slam: " .. tostring(picked))
+  -- if tracking ever fails, the helper still moves on to the next step
+  local realTrack = ns.TrackCast
+  ns.TrackCast = function() error("tracking broke") end
+  local comp = ns.HelperComp()
+  H.lastPress, H.idx = -100, 1
+  local stepSpell = comp.steps[1] and comp.steps[1].spells and comp.steps[1].spells[1]
+  local okC = pcall(ns.OnPlayerCast, IDS[stepSpell] or IDS.Rend)
+  check(okC and H.idx ~= 1, ("a cast still advances the helper when tracking fails (%s, step %s)")
+    :format(tostring(stepSpell), tostring(H.idx)))
+  ns.TrackCast = realTrack
+  setmetatable(tracked.target, nil)
+  issecretvalue = realSecret
+  guid = "Creature-A"; ns.trackerFrame._scripts.OnEvent(ns.trackerFrame, "PLAYER_TARGET_CHANGED")
+end
 -- a cast that isn't a buff/debuff check isn't tracked
 evf._scripts.OnEvent(evf, "UNIT_SPELLCAST_SUCCEEDED", "player", "guid", IDS["Heroic Strike"])
 check(not ns.TrackerSummary():find("Heroic Strike"), "Heroic Strike not tracked")
@@ -2990,6 +3033,38 @@ do
     "size slider: the key bar keeps its spot on screen")
   TactaraCharDB.display, TactaraCharDB.helperPos, TactaraCharDB.displayScale, TactaraCharDB.helperScale,
     ns.display, ns.helperPopup = saved[1], saved[2], saved[3], saved[4], saved[5], saved[6]
+end
+
+-- Hidden values as the game hands them over: no error, just a value Tactara
+-- may not compare or use as a key. Each check treats it as "can't tell".
+do
+  local realSecret = issecretvalue
+  local saved = { UnitExists = UnitExists, UnitCreatureType = UnitCreatureType, GetComboPoints = GetComboPoints,
+    UnitPower = UnitPower, GetSpellCooldown = C_Spell.GetSpellCooldown, IsSpellInRange = C_Spell.IsSpellInRange,
+    lookups = ns.auraLookupsWork }
+  issecretvalue = function(v) return type(v) == "string" and v:find("SECRET", 1, true) ~= nil end
+  check(ns.IsSecret("SECRET-x") and not ns.IsSecret("Undead") and not ns.IsSecret(nil), "ns.IsSecret asks the game")
+  UnitExists = function() return true end
+  UnitCreatureType = function() return "SECRET-Undead" end
+  check(ns.CheckLive({ kind = "creature", arg = "Undead" }) == nil, "@creature: hidden type -> can't tell")
+  GetComboPoints = function() return "SECRET-5" end
+  UnitPower = function() return "SECRET-5" end
+  local okC, cp = pcall(ns.ComboPoints)
+  check(okC and type(cp) == "number", "combo points hidden -> counted from casts: " .. tostring(cp))
+  C_Spell.GetSpellCooldown = function() return { startTime = "SECRET-1", duration = "SECRET-2", isOnGCD = false } end
+  check(ns.IconCooldown("Rend") == nil, "cooldown hidden -> no sweep")
+  C_Spell.IsSpellInRange = function() return "SECRET-true" end
+  check(ns.IconInRange("Rend") == nil, "range hidden -> plain")
+  ns.auraLookupsWork = nil
+  local wasCombat = inCombat; inCombat = false
+  ns.NoteAuraSeen({ name = "SECRET-Battle Shout" })
+  check(not ns.auraLookupsWork, "a hidden buff name doesn't count as 'the game shows buffs'")
+  ns.NoteAuraSeen({ name = "Battle Shout" })
+  check(ns.auraLookupsWork == true, "a readable buff name does")
+  inCombat = wasCombat
+  issecretvalue = realSecret
+  UnitExists, UnitCreatureType, GetComboPoints, UnitPower = saved.UnitExists, saved.UnitCreatureType, saved.GetComboPoints, saved.UnitPower
+  C_Spell.GetSpellCooldown, C_Spell.IsSpellInRange, ns.auraLookupsWork = saved.GetSpellCooldown, saved.IsSpellInRange, saved.lookups
 end
 
 print(fails == 0 and "\nHELPER TEST PASSED" or ("\n" .. fails .. " FAILURE(S)"))

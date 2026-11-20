@@ -228,9 +228,10 @@ function ns.CheckLive(c)
     local ok, kind = pcall(function()
       if not UnitExists("target") then return false end
       local t = UnitCreatureType("target")
-      return t and (tostring(t) .. "") or false   -- errors if the game hides it
+      if ns.IsSecret(t) then return nil end
+      return t and tostring(t) or false
     end)
-    if not ok then return nil end
+    if not ok or kind == nil or ns.IsSecret(kind) then return nil end   -- the game hides it
     if not kind then return false end
     for want in c.arg:gmatch("[^,/]+") do
       if ns.trim(want):lower() == kind:lower() then return true end
@@ -385,7 +386,9 @@ local function StepHas(step, name)
 end
 
 function ns.OnPlayerCast(spellID)
-  ns.TrackCast(SpellName(spellID))                           -- buff/debuff timers (Tracker.lua)
+  -- buff/debuff timers (Tracker.lua); if that ever fails, still move the helper on
+  local okT, errT = pcall(ns.TrackCast, SpellName(spellID))
+  if not okT then ns.Debug("timer tracking failed: " .. tostring(errT)) end
   if GetTime() - H.lastPress < PRESS_GRACE then
     ns.HelperRefresh()
     return                                                   -- the Tactara key already moved us

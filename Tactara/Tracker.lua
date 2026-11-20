@@ -89,8 +89,10 @@ end
 local function TargetKey()
   local ok, key = pcall(function()
     local guid = UnitGUID("target")
-    if guid == nil then return nil end
-    return tostring(guid) .. ""          -- errors if the GUID is hidden
+    if ns.IsSecret(guid) or guid == nil then return nil end   -- hidden in some fights
+    local key = tostring(guid)
+    if ns.IsSecret(key) then return nil end
+    return key
   end)
   if ok and key then return key end
   return "current target"
@@ -115,6 +117,7 @@ function ns.BuffDuration(spell)
 end
 
 function ns.LearnDuration(spell, seconds)
+  if ns.IsSecret(seconds) then return end
   local ok, valid = pcall(function() return type(seconds) == "number" and seconds > 1 and seconds < 3600 end)
   if ok and valid then learned[spell] = seconds end
 end
@@ -140,9 +143,9 @@ function ns.ComboPoints()
   local ok, n = pcall(function()
     local v
     if GetComboPoints then v = GetComboPoints("player", "target") end
-    if v == nil and UnitPower then v = UnitPower("player", 4) end   -- Enum.PowerType.ComboPoints
-    if v == nil then return nil end
-    return tonumber(tostring(v) .. "")      -- errors if the game hides it
+    if not ns.IsSecret(v) and v == nil and UnitPower then v = UnitPower("player", 4) end   -- Enum.PowerType.ComboPoints
+    if ns.IsSecret(v) or v == nil then return nil end   -- hidden: count from your casts
+    return tonumber(v)
   end)
   if ok and n then return n end
   return counted
@@ -204,6 +207,7 @@ function ns.TrackCast(spellName)
     bucket = tracked.player.me
   else
     local key = TargetKey()
+    if ns.IsSecret(key) then key = "current target" end
     tracked.target[key] = tracked.target[key] or {}
     bucket = tracked.target[key]
   end
