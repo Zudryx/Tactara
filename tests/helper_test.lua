@@ -432,6 +432,36 @@ end
 inCombat = false
 targetAuras["Rend"] = nil
 
+-- 18c) /tac probe: which ways of reading your own health the game allows
+-- (0.19.3: UnitHealth("player") is hidden even out of combat; the max isn't)
+do
+  local realSecret = issecretvalue
+  local saved = { UnitHealth, UnitHealthMax, UnitHealthPercent, UnitHealthMissing, C_Secrets, PlayerFrame }
+  issecretvalue = function(v) return v == "SECRET" end
+  UnitHealth = function() return "SECRET" end
+  UnitHealthMax = function() return 638 end
+  UnitHealthPercent = function() return 72 end
+  UnitHealthMissing = function() return "SECRET" end
+  C_Secrets = { ShouldUnitHealthBeSecret = function() return true end,
+    ShouldUnitPowerBeSecret = function() return false end, ShouldSpellAuraBeSecret = function() return true end }
+  PlayerFrame = { healthbar = { GetValue = function() return "SECRET" end, GetMinMaxValues = function() return 0, 638 end } }
+  chat = {}
+  local okP, eP = pcall(SlashCmdList.TACTARA, "probe")
+  local out = table.concat(chat, "\n")
+  check(okP, "/tac probe with the health checks: " .. tostring(eP))
+  check(out:find("health functions the game has: UnitHealth UnitHealthMax UnitHealthMissing UnitHealthPercent", 1, true),
+    "probe lists the game's health functions")
+  check(out:find("UnitHealthPercent(player): 72", 1, true) and out:find("UnitHealthMissing(player): |cffff5555HIDDEN", 1, true),
+    "probe tries each one and shows what it gives")
+  check(out:find("what the game hides (C_Secrets): ShouldSpellAuraBeSecret ShouldUnitHealthBeSecret ShouldUnitPowerBeSecret", 1, true)
+    and out:find("ShouldUnitHealthBeSecret(player): true", 1, true) and out:find("ShouldUnitPowerBeSecret(player): false", 1, true),
+    "probe lists what the game says it hides, and asks it about you")
+  check(out:find("health bar on your player frame: |cffff5555HIDDEN|r, 638", 1, true), "probe reads your player frame's health bar")
+  issecretvalue = realSecret
+  UnitHealth, UnitHealthMax, UnitHealthPercent, UnitHealthMissing, C_Secrets, PlayerFrame =
+    saved[1], saved[2], saved[3], saved[4], saved[5], saved[6]
+end
+
 -- 18b) in a dungeon fight the game hides your target's name. Text built from a
 -- hidden value stays hidden, and the game's table.concat refuses it (reported
 -- in 0.19.2: "invalid value (secret) at index 1 in table for 'concat'").

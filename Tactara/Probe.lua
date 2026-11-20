@@ -142,6 +142,44 @@ function ns.Probe()
   Check("target creature type", function() return UnitCreatureType("target") end)
   Check("target health / max", function() return UnitHealth("target"), UnitHealthMax("target") end)
   Check("YOUR health / max", function() return UnitHealth("player"), UnitHealthMax("player") end)
+  -- Your current health is hidden even out of combat (seen with 0.19.3; the
+  -- max isn't). Which other ways of reading it does the game have, and do
+  -- they give a number?
+  local healthFns = {}
+  for k, v in pairs(_G) do
+    if type(k) == "string" and type(v) == "function" and (k:find("^UnitHealth") or k:find("^GetUnitHealth")) then
+      healthFns[#healthFns + 1] = k
+    end
+  end
+  table.sort(healthFns)
+  Check("health functions the game has", function()
+    return #healthFns > 0 and table.concat(healthFns, " ") or "none"
+  end)
+  for _, fname in ipairs(healthFns) do
+    if fname ~= "UnitHealth" and fname ~= "UnitHealthMax" then
+      Check(fname .. "(player)", function() return _G[fname]("player") end)
+    end
+  end
+  if type(C_Secrets) == "table" then
+    local names = {}
+    for k, v in pairs(C_Secrets) do if type(v) == "function" then names[#names + 1] = k end end
+    table.sort(names)
+    Check("what the game hides (C_Secrets)", function() return table.concat(names, " ") end)
+    for _, k in ipairs(names) do
+      if k:find("^ShouldUnit") then Check(k .. "(player)", function() return C_Secrets[k]("player") end) end
+    end
+  end
+  Check("health bar on your player frame", function()
+    local bar = PlayerFrame and PlayerFrame.healthbar
+    if not bar and PlayerFrame_GetHealthBar then bar = PlayerFrame_GetHealthBar() end
+    if not bar and PlayerFrame and PlayerFrame.PlayerFrameContent then
+      local main = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain
+      bar = main and main.HealthBarsContainer and main.HealthBarsContainer.HealthBar
+    end
+    if not (bar and bar.GetValue and bar.GetMinMaxValues) then return "not found" end
+    local _, max = bar:GetMinMaxValues()
+    return bar:GetValue(), max
+  end)
   Check("target casting (name, interruptible?)", function()
     local name, _, _, _, _, _, _, notInt = UnitCastingInfo("target")
     if not name then
