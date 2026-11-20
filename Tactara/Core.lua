@@ -5,7 +5,7 @@
 
 local ADDON, ns = ...
 
-ns.VERSION = "0.19.3"
+ns.VERSION = "0.19.4"
 ns.builtin = {}        -- [name] = rotation text shipped with the addon
 ns.builtinOrder = {}   -- names in load order
 ns.compiled = {}       -- .main / .aoe compiled sequences
@@ -527,6 +527,7 @@ local HELP = {
   "|cffffd100/tac probe talents|r  report how your talents look to Tactara, in a window you can copy from (changes nothing)",
   "|cffffd100/tac probe locale|r  check Tactara's spell IDs (for games in other languages) against the game (changes nothing)",
   "|cffffd100/tac probe reminders|r  report what Tactara sees for the trainer, before-the-pull and supply reminders (changes nothing)",
+  "|cffffd100/tac probe health|r  test whether the game can show an icon by your health (two test squares for 30 seconds)",
   "|cffffd100/tac debug|r  print every press, cast and game error to chat",
   "|cffffd100/tac keydown auto / off|r  troubleshooting: fire on key down (default) or key up",
   "Key bindings: Esc > Options > Keybindings > AddOns > Tactara",
@@ -809,6 +810,7 @@ local function HandleSlash(msg)
     elseif what:match("^remind") or what:match("^trainer") or what:match("^pull") or what:match("^suppl")
       or what:match("^ammo") then ns.ProbeReminders()
     elseif what:match("^locale") or what:match("^lang") then ns.ProbeLocale()
+    elseif what:match("^health") then ns.ProbeHealth()
     else ns.Probe() end
   elseif cmd == "spells" then
     ns.ReportSpells()

@@ -2,6 +2,9 @@
 
 Each `## x.y.z` section becomes the release notes for that version.
 
+## 0.19.4
+- New: `/tac probe health`. WoW Forever hides your current health from addons, so Tactara's defensive suggestions (and Reckless Swings) can't show. Newer versions of the game let an addon show an icon by your health without ever reading it. This test finds out whether Forever allows that: it reports what the game offers and shows two red test squares for 30 seconds that should appear while you're below 90% health. Nothing else changes.
+
 ## 0.19.3
 - **Fixed:** a Lua error when you cast a debuff Tactara keeps a timer for (Serpent Sting, Hunter's Mark, Rend and others) while the game hides your target's ID from addons, which it does in some fights. The helper also missed its next step on that cast. Timers now fall back to "your current target", and a cast always moves the helper on. Thanks to the player who tracked down the cause.
 - The same kind of hidden value is now handled everywhere Tactara reads one: your target's creature type, combo points, buff names, cooldowns and range. When the game hides one, Tactara treats it as "can't tell" instead of guessing or erroring.

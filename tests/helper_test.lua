@@ -462,6 +462,66 @@ do
     saved[1], saved[2], saved[3], saved[4], saved[5], saved[6]
 end
 
+-- 18d) /tac probe health: can the game show an icon by your health without
+-- Tactara reading it? Lists the curve functions, tests a curve, and shows two
+-- test squares for 30 seconds whose alpha the game sets from your health.
+do
+  local realSecret = issecretvalue
+  local saved = { C_CurveUtil, CurveConstants, UnitHealthPercent, Enum }
+  issecretvalue = function(v) return v == "SECRET" end
+  -- no curve functions: says so, no squares, no error
+  C_CurveUtil, CurveConstants, UnitHealthPercent = nil, nil, nil
+  chat = {}
+  local ok0, e0 = pcall(SlashCmdList.TACTARA, "probe health")
+  local out0 = table.concat(chat, "\n")
+  check(ok0 and out0:find("curve functions (C_CurveUtil): |cffaaaaaano such API", 1, true)
+    and not (frames.TactaraHealthTest and frames.TactaraHealthTest:IsShown()),
+    "probe health without curve functions: says so: " .. tostring(e0))
+  -- with them
+  local function NewCurve()
+    local c = { points = {}, kind = 0 }
+    function c:SetType(t) self.kind = t end
+    function c:AddPoint(x, y) self.points[#self.points + 1] = { x, y } end
+    function c:Evaluate(x)
+      local v = self.points[1] and self.points[1][2]
+      for _, p in ipairs(self.points) do if x >= p[1] then v = p[2] end end
+      return v
+    end
+    return c
+  end
+  C_CurveUtil = { CreateCurve = NewCurve }
+  CurveConstants = { ScaleTo100 = 1 }
+  Enum = Enum or {}
+  Enum.LuaCurveType = { Linear = 0, Step = 1 }
+  local gotCurve
+  UnitHealthPercent = function(_, _, curve) gotCurve = curve; return "SECRET" end
+  chat = {}
+  local ok1, e1 = pcall(SlashCmdList.TACTARA, "probe health")
+  local out = table.concat(chat, "\n")
+  check(ok1, "/tac probe health runs: " .. tostring(e1))
+  check(out:find("curve functions (C_CurveUtil): CreateCurve", 1, true), "lists the curve functions")
+  check(out:find("curve methods: AddPoint Evaluate SetType", 1, true), "lists what a curve can do")
+  check(out:find("test curve, 0-1 scale, at 50% / 95%: 1, 0", 1, true)
+    and out:find("test curve, 0-100 scale, at 50 / 95: 1, 0", 1, true), "tests both curves on plain numbers")
+  check(out:find("your health through the curve: |cffff5555HIDDEN", 1, true), "reads health through the curve")
+  local hf = frames.TactaraHealthTest
+  check(hf and hf:IsShown() and hf.squares and #hf.squares == 2, "two test squares on screen")
+  hf:GetScript("OnUpdate")(hf, 0.2)
+  check(hf.squares[1]._alpha == "SECRET" and hf.squares[2]._alpha == "SECRET" and gotCurve,
+    "the game's value goes straight to each square's alpha")
+  check(out:find("30 seconds", 1, true), "says how long the test runs")
+  now = now + 31
+  hf:GetScript("OnUpdate")(hf, 0.2)
+  check(not hf:IsShown(), "test squares go away after 30 seconds")
+  chat = {}
+  local _ = pcall(SlashCmdList.TACTARA, "probe health")
+  hf:GetScript("OnUpdate")(hf, 0.2)
+  check(hf:IsShown(), "and can be run again")
+  hf:Hide()
+  issecretvalue = realSecret
+  C_CurveUtil, CurveConstants, UnitHealthPercent, Enum = saved[1], saved[2], saved[3], saved[4]
+end
+
 -- 18b) in a dungeon fight the game hides your target's name. Text built from a
 -- hidden value stays hidden, and the game's table.concat refuses it (reported
 -- in 0.19.2: "invalid value (secret) at index 1 in table for 'concat'").

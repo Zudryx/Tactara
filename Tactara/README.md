@@ -190,6 +190,7 @@ Tactara only tells you; it never casts, buys or learns anything for you.
 | `/tac probe talents` | A read-only report on your talents and the talent window, in a window you can copy from. Changes nothing. |
 | `/tac probe locale` | A read-only check of Tactara's spell IDs (used on games in other languages) against your game |
 | `/tac probe reminders` | A read-only report on what the trainer, buff (before and after a fight) and supply reminders can see, with each buff's time left. Changes nothing. |
+| `/tac probe health` | Tests whether the game can show an icon by your health without Tactara reading it (WoW Forever hides your health from addons). Shows two test squares for 30 seconds. Changes nothing. |
 | `/tac debug` | Prints every press, every cast sent and every game error to chat |
 | `/tac keydown auto` / `off` | Troubleshooting only: cast on key down (default) or key up |
 

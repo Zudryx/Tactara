@@ -224,6 +224,149 @@ function ns.Probe()
 end
 
 ---------------------------------------------------------------------------
+-- /tac probe health: WoW Forever hides your current health from addons (seen
+-- with 0.19.3). Newer game versions let an addon hand a hidden value to the
+-- game through a "curve" and have it set an icon's alpha, without the addon
+-- ever reading the value. This finds out whether Forever allows that: it
+-- lists the curve functions, tests a curve, and shows two test squares for
+-- 30 seconds whose alpha comes straight from your health. One square assumes
+-- health is given as 0-1, the other as 0-100; each should show while you're
+-- below 90% health and vanish above it.
+---------------------------------------------------------------------------
+
+local HEALTH_TEST_SECONDS = 30
+
+local function MethodNames(obj)
+  local names, seen = {}, {}
+  local function add(t)
+    if type(t) ~= "table" then return end
+    for k, v in pairs(t) do
+      if type(k) == "string" and type(v) == "function" and not seen[k] then
+        seen[k] = true
+        names[#names + 1] = k
+      end
+    end
+  end
+  if type(obj) == "table" then add(obj) end
+  local okM, mt = pcall(getmetatable, obj)
+  if okM and type(mt) == "table" then add(mt.__index) end
+  table.sort(names)
+  return #names > 0 and table.concat(names, " ") or "none found"
+end
+
+-- a step curve: 1 below `at`, 0 from `at` up
+local function StepCurve(at)
+  local curve = C_CurveUtil.CreateCurve()
+  if curve.SetType and Enum and Enum.LuaCurveType and Enum.LuaCurveType.Step then
+    curve:SetType(Enum.LuaCurveType.Step)
+  end
+  curve:AddPoint(0, 1)
+  curve:AddPoint(at, 0)
+  return curve
+end
+
+local healthTest
+
+local function ShowHealthTest(curves)
+  if not healthTest then
+    local f = CreateFrame("Frame", "TactaraHealthTest", UIParent)
+    f:SetSize(220, 90)
+    f:SetPoint("CENTER", UIParent, "CENTER", 0, 160)
+    f:SetFrameStrata("DIALOG")
+    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    f.title:SetPoint("TOP", f, "TOP", 0, 0)
+    f.title:SetText("Tactara health test")
+    f.squares, f.labels = {}, {}
+    for i, label in ipairs({ "0-1", "0-100" }) do
+      local sq = f:CreateTexture(nil, "ARTWORK")
+      sq:SetSize(40, 40)
+      sq:SetPoint("TOP", f, "TOP", (i == 1) and -50 or 50, -20)
+      sq:SetColorTexture(1, 0.15, 0.15, 1)
+      f.squares[i] = sq
+      local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+      fs:SetPoint("TOP", sq, "BOTTOM", 0, -2)
+      fs:SetText(label)
+      f.labels[i] = fs
+    end
+    f:SetScript("OnUpdate", function(self, elapsed)
+      self.wait = (self.wait or 0) - (elapsed or 0)
+      if GetTime() >= (self.endsAt or 0) then
+        self:Hide()
+        ns.Print("health test finished.")
+        return
+      end
+      if self.wait > 0 then return end
+      self.wait = 0.1
+      for i, sq in ipairs(self.squares) do
+        local curve = self.curves and self.curves[i]
+        if curve then
+          local ok, err = pcall(function()
+            sq:SetAlpha(UnitHealthPercent("player", true, curve))
+          end)
+          if not ok and not self.reported[i] then
+            self.reported[i] = true
+            ns.Print(("health test, %s square: the game refused (%s)"):format(self.labels[i]:GetText(),
+              tostring(err):gsub("^.-:%d+: ", ""):sub(1, 80)))
+          end
+        end
+      end
+    end)
+    healthTest = f
+  end
+  healthTest.curves = curves
+  healthTest.reported = {}
+  healthTest.wait = 0
+  healthTest.endsAt = GetTime() + HEALTH_TEST_SECONDS
+  healthTest:Show()
+end
+
+function ns.ProbeHealth()
+  ns.Print("probe health - can the game show an icon by your health without Tactara reading it?"
+    .. " Please screenshot this and send it over.")
+  Check("health percent function", function() return need(UnitHealthPercent, "UnitHealthPercent") and "yes" end)
+  Check("curve functions (C_CurveUtil)", function() return MethodNames(need(C_CurveUtil, "C_CurveUtil")) end)
+  Check("CurveConstants", function()
+    local keys = {}
+    for k in pairs(need(CurveConstants, "CurveConstants")) do keys[#keys + 1] = tostring(k) end
+    table.sort(keys)
+    return table.concat(keys, " ")
+  end)
+  Check("curve types (Enum.LuaCurveType)", function()
+    local keys = {}
+    for k in pairs(need(Enum and Enum.LuaCurveType, "Enum.LuaCurveType")) do keys[#keys + 1] = tostring(k) end
+    table.sort(keys)
+    return table.concat(keys, " ")
+  end)
+  if not (C_CurveUtil and C_CurveUtil.CreateCurve and UnitHealthPercent) then
+    ns.Print("  no curves here, so no test squares.")
+    return
+  end
+  local okC, curve01 = pcall(StepCurve, 0.9)
+  local okH, curve100 = pcall(StepCurve, 90)
+  Check("curve methods", function()
+    if not okC then error(curve01) end
+    return MethodNames(curve01)
+  end)
+  Check("test curve, 0-1 scale, at 50% / 95%", function()
+    if not okC then error(curve01) end
+    return curve01:Evaluate(0.5), curve01:Evaluate(0.95)
+  end)
+  Check("test curve, 0-100 scale, at 50 / 95", function()
+    if not okH then error(curve100) end
+    return curve100:Evaluate(50), curve100:Evaluate(95)
+  end)
+  Check("your health through the curve", function()
+    if not okC then error(curve01) end
+    return UnitHealthPercent("player", true, curve01)
+  end)
+  if okC or okH then
+    ShowHealthTest({ okC and curve01 or nil, okH and curve100 or nil })
+    ns.Print(("  Two red squares are on screen for %d seconds. Each should show while you're below 90%% health"
+      .. " and disappear above it. Tell me which one (0-1 or 0-100) does that, if either."):format(HEALTH_TEST_SECONDS))
+  end
+end
+
+---------------------------------------------------------------------------
 -- A window with text you can copy (Ctrl+C), for reports that are too long
 -- for a screenshot.
 ---------------------------------------------------------------------------
