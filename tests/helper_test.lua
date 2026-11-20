@@ -50,7 +50,8 @@ newObj = function(kind, name)
     CreateAnimationGroup = function() return newObj("AnimationGroup") end,
     CreateAnimation = function() return newObj("Animation") end,
     SetTexture = function(self, t) self._texture = t end,
-    GetFrameLevel = function() return 5 end,
+    GetFrameLevel = function(self) return self._level or 5 end,
+    SetFrameLevel = function(self, l) self._level = l end,
     SetAlpha = function(self, a) self._alpha = a end,
     GetAlpha = function(self) return self._alpha or 1 end,
     IsVisible = function(self) return self._shown end,
@@ -931,6 +932,122 @@ inCombat = true
 SlashCmdList.TACTARA("defensives off")
 check(ns.lastUtility.defensive == nil, "/tac defensives off")
 SlashCmdList.TACTARA("defensives on")
+
+-- Health the game hides, shown by the game (0.19.4). WoW Forever doesn't let
+-- addons read your health, but Tactara can hand the game a curve ("show below
+-- 50%") and the game sets the icon's alpha from your health. Here stubs play
+-- the game: UnitHealthPercent runs the curve on the hidden health and hands
+-- back a value Tactara can't compare or do sums with.
+local function GameCurve()
+  local c = { points = {} }
+  function c:SetType(t) self.kind = t end
+  function c:AddPoint(x, y) self.points[#self.points + 1] = { x, y } end
+  function c:Evaluate(x)
+    local v = self.points[1] and self.points[1][2]
+    for _, p in ipairs(self.points) do if x >= p[1] then v = p[2] end end
+    return v
+  end
+  return c
+end
+local SEALED = { __lt = function() error("compared a hidden value") end, __le = function() error("compared a hidden value") end,
+  __add = function() error("did sums with a hidden value") end, __concat = function() error("joined a hidden value") end }
+local function GameHealthPercent(_, _, curve)
+  return setmetatable({ alpha = curve:Evaluate(playerHP / 100) }, SEALED)
+end
+local function AlphaOf(frame) return type(frame._alpha) == "table" and frame._alpha.alpha or frame._alpha end
+do
+  local saved = { C_CurveUtil, UnitHealthPercent, Enum.LuaCurveType }
+  C_CurveUtil = { CreateCurve = GameCurve }
+  Enum.LuaCurveType = { Linear = 0, Step = 1 }
+  UnitHealthPercent = GameHealthPercent
+  local pop = ns.helperPopup
+  hpHidden = true; playerHP = 40; nameplates = 3
+  tick()
+  local g = ns.lastUtility.defensiveGated or {}
+  check(ns.lastUtility.defensive == nil and #g == 1 and g[1].spell == "Retaliation" and g[1].gate.pct == 50
+    and not g[1].gate.above, "health hidden: Retaliation handed to the game, to show below 50%")
+  local layer = pop.defLayers and pop.defLayers[1]
+  check(layer and layer:IsShown() and layer.tex._texture == "icon:Retaliation" and AlphaOf(layer) == 1,
+    "40%: the game shows it, got alpha " .. tostring(layer and AlphaOf(layer)))
+  check(type(layer._alpha) == "table", "the game's value goes straight to the icon (Tactara never reads it)")
+  check(not pop.defensive:IsShown(), "the plain slot stays empty: Tactara can't tell")
+  check(H.lit[_G.MultiBarBottomLeftButton3] ~= "defensive", "no bar glow: Tactara doesn't know whether it shows")
+  playerHP = 90; tick()
+  check(layer:IsShown() and AlphaOf(layer) == 0, "90%: the game hides it")
+  nameplates = 1; tick()
+  check(#(ns.lastUtility.defensiveGated or {}) == 0 and not layer:IsShown(), "1 enemy: its other check fails, nothing handed over")
+  nameplates = 3
+  -- two defensives, each with its own line; the first in the list sits on top
+  inCombat = false; known["Shield Wall"] = true; fire("SPELLS_CHANGED"); runTimers(); inCombat = true   -- rebuilt out of combat
+  playerHP = 15; tick()
+  g = ns.lastUtility.defensiveGated or {}
+  check(#g == 2 and g[1].spell == "Shield Wall" and g[1].gate.pct == 20 and g[2].spell == "Retaliation",
+    "two handed over, in list order: " .. tostring(g[1] and g[1].spell) .. ", " .. tostring(g[2] and g[2].spell))
+  local l1, l2 = pop.defLayers[1], pop.defLayers[2]
+  check(l1 and l2 and AlphaOf(l1) == 1 and AlphaOf(l2) == 1 and l1:GetFrameLevel() > l2:GetFrameLevel(),
+    "15%: both show, Shield Wall on top")
+  playerHP = 30; tick()
+  check(AlphaOf(l1) == 0 and AlphaOf(l2) == 1, "30%: the game hides Shield Wall, Retaliation shows")
+  inCombat = false; known["Shield Wall"] = nil; fire("SPELLS_CHANGED"); runTimers(); inCombat = true
+  playerHP = 40; tick()
+  check(not pop.defLayers[2]:IsShown(), "an icon that's no longer needed goes away")
+  -- the defensive sound only plays for a defensive Tactara can see
+  local played = 0
+  PlaySound = function() played = played + 1; return true end
+  TactaraCharDB.defensiveSound = "ready"
+  ns.ResetUtilitySounds()
+  playerHP = 40; tick(); playerHP = 90; tick(); playerHP = 40; tick()
+  check(played == 0, "no sound for a defensive only the game can show")
+  TactaraCharDB.defensiveSound = "off"; PlaySound = nil
+  -- the game can't do it (no curves): no guess, as before
+  C_CurveUtil = nil; tick()
+  check(ns.lastUtility.defensive == nil and #(ns.lastUtility.defensiveGated or {}) == 0
+    and not pop.defLayers[1]:IsShown(), "no curves: nothing shown")
+  -- if the game ever shows your health again: the plain slot, glow and all
+  C_CurveUtil = { CreateCurve = GameCurve }; hpHidden = false; playerHP = 40; tick()
+  check(ns.lastUtility.defensive == "Retaliation" and #(ns.lastUtility.defensiveGated or {}) == 0
+    and pop.defensive:IsShown() and not pop.defLayers[1]:IsShown()
+    and H.lit[_G.MultiBarBottomLeftButton3] == "defensive", "health readable: the plain slot and the glow, as before")
+  playerHP = 90; tick()   -- as the tests after this expect: 90%, 3 enemies
+  C_CurveUtil, UnitHealthPercent, Enum.LuaCurveType = saved[1], saved[2], saved[3]
+end
+
+-- Reckless Swings and other "@health above" lines in the [priority] list:
+-- when one ranks above the helper's pick, the game shows it over the big icon.
+do
+  local saved = { C_CurveUtil, UnitHealthPercent, Enum.LuaCurveType, ns.HelperComp, TactaraCharDB.helperMode }
+  C_CurveUtil = { CreateCurve = GameCurve }
+  Enum.LuaCurveType = { Linear = 0, Step = 1 }
+  UnitHealthPercent = GameHealthPercent
+  local env = { isKnown = function() return true end, hasBuff = function() return false end }
+  local comp = ns.Compile(ns.Parse("name: t\n[priority]\n/cast Mortal Strike\n/cast Reckless Swings @health above 60\n/cast Slam"),
+    "main", env)
+  ns.HelperComp = function() return comp end
+  TactaraCharDB.helperMode = "priority"
+  hpHidden = true; playerHP = 80; inCombat = true; hasTarget = true
+  for k in pairs(cooldowns) do cooldowns[k] = nil end
+  local cands, gated = ns.PriorityCandidates(comp, 3)
+  check(cands[1] == "Mortal Strike" and #gated == 0, "Mortal Strike ready: nothing goes over it")
+  cooldowns["Mortal Strike"] = { isActive = true, isOnGCD = false }
+  cands, gated = ns.PriorityCandidates(comp, 3)
+  check(cands[1] == "Slam" and #gated == 1 and gated[1].spell == "Reckless Swings" and gated[1].gate.above
+    and gated[1].gate.pct == 60, "Mortal Strike on cooldown: Slam, with Reckless Swings handed to the game (above 60%)")
+  ns.UpdateHelperPopup()
+  local pop = ns.helperPopup
+  local over = pop.nowLayers and pop.nowLayers[1]
+  check(pop.icons[1].tex._texture == "icon:Slam" and over and over:IsShown() and over.tex._texture == "icon:Reckless Swings"
+    and AlphaOf(over) == 1 and over:GetFrameLevel() > pop.icons[1]:GetFrameLevel(), "80%: Reckless Swings shows over Slam")
+  playerHP = 40; ns.UpdateHelperPopup()
+  check(AlphaOf(over) == 0, "40%: the game hides it, Slam shows")
+  check(ns.HelperPick() == "Slam", "the bar glow stays on Slam (Tactara can't tell which shows)")
+  cooldowns["Mortal Strike"] = nil; ns.UpdateHelperPopup()
+  check(pop.icons[1].tex._texture == "icon:Mortal Strike" and not over:IsShown(), "Mortal Strike back: nothing over it")
+  for k in pairs(cooldowns) do cooldowns[k] = nil end
+  hpHidden = false; playerHP = 90
+  C_CurveUtil, UnitHealthPercent, Enum.LuaCurveType, ns.HelperComp, TactaraCharDB.helperMode =
+    saved[1], saved[2], saved[3], saved[4], saved[5]
+  ns.UpdateHelperPopup()
+end
 
 -- a sound when the interrupt or defensive slot lights up (off unless picked)
 do

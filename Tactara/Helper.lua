@@ -206,6 +206,13 @@ function ns.BuffLowAt(full)
   return base * factor
 end
 
+-- "@health 35" (below 35%) or "@health above 60" / "> 60" (60% or more)
+local function HealthArg(c)
+  local n = tonumber(c.arg:match("%d+")) or 35
+  local arg = c.arg:lower()
+  return n, (arg:find("above", 1, true) or arg:find(">", 1, true)) and true or false
+end
+
 function ns.CheckLive(c)
   if c.kind == "enemies" then
     local need = tonumber(c.arg:match("%d+")) or 2
@@ -219,10 +226,8 @@ function ns.CheckLive(c)
   elseif c.kind == "health" then
     local pct = ns.PlayerHealthPct()
     if not pct then return nil end
-    local n = tonumber(c.arg:match("%d+")) or 35
-    -- "@health above 60" (or "> 60"): only with that much health or more
-    local arg = c.arg:lower()
-    if arg:find("above", 1, true) or arg:find(">", 1, true) then return pct >= n end
+    local n, above = HealthArg(c)
+    if above then return pct >= n end
     return pct < n
   elseif c.kind == "creature" then
     local ok, kind = pcall(function()
@@ -260,6 +265,75 @@ function ns.PlayerHealthPct()
   return nil
 end
 
+---------------------------------------------------------------------------
+-- Health the game hides. WoW Forever doesn't let addons read your current
+-- health (/tac probe health, 0.19.4), but the game can show or hide an icon
+-- by it: Tactara hands it a "curve" (1 below 20%, 0 from there up) and the
+-- game sets the icon's alpha from your health. Tactara never sees the number.
+-- A line whose health check the game hides comes back with a gate for the
+-- display to hand over.
+---------------------------------------------------------------------------
+
+local curves, curvesFor, curvesWork = {}, nil, false
+
+-- Can the game show icons by your health? (Checked again if the game's
+-- curve functions change, which in practice is only in tests.)
+function ns.HealthCurvesWork()
+  local util = C_CurveUtil
+  if curvesFor ~= util or util == nil then
+    curvesFor, curves = util, {}
+    curvesWork = false
+    if util and util.CreateCurve and UnitHealthPercent then
+      curvesWork = pcall(function() util.CreateCurve():AddPoint(0, 1) end) and true or false
+    end
+  end
+  return curvesWork and UnitHealthPercent ~= nil
+end
+
+local function HealthCurve(pct, above)
+  local key = (above and "above" or "below") .. pct
+  if curves[key] then return curves[key] end
+  local c = C_CurveUtil.CreateCurve()
+  if c.SetType and Enum and Enum.LuaCurveType and Enum.LuaCurveType.Step then c:SetType(Enum.LuaCurveType.Step) end
+  local at = pct / 100                      -- the game gives health as 0-1
+  if above then
+    c:AddPoint(0, 0); c:AddPoint(at, 1)
+  else
+    c:AddPoint(0, 1); c:AddPoint(at, 0)
+  end
+  curves[key] = c
+  return c
+end
+
+-- Let the game show `frame` only while your health passes `gate`; no gate:
+-- fully shown. If the game refuses, the frame stays hidden (no guessing).
+function ns.ApplyHealthGate(frame, gate)
+  if not gate then frame:SetAlpha(1) return true end
+  local ok = pcall(function()
+    frame:SetAlpha(UnitHealthPercent("player", true, HealthCurve(gate.pct, gate.above)))
+  end)
+  if not ok then frame:SetAlpha(0) end
+  return ok
+end
+
+-- Like LiveOK, but a health check the game hides doesn't fail the line if
+-- the game can show it by health: true plus a gate { pct, above } then.
+function ns.LiveGate(entry)
+  local gate
+  for _, c in ipairs(entry.live) do
+    local r = ns.CheckLive(c)
+    if r ~= true then
+      if r == nil and c.kind == "health" and not gate and ns.HealthCurvesWork() then
+        local n, above = HealthArg(c)
+        gate = { pct = n, above = above }
+      else
+        return false
+      end
+    end
+  end
+  return true, gate
+end
+
 local function LiveOK(entry)
   for _, c in ipairs(entry.live) do
     if ns.CheckLive(c) ~= true then return false end
@@ -269,11 +343,20 @@ end
 ns.LiveOK = LiveOK
 
 -- Up to n spells from the [priority] list, best first: ready ones, then
--- ones only waiting on Rage.
+-- ones only waiting on Rage. Second result: ready lines above the first pick
+-- whose health check only the game can make (Reckless Swings above 60%),
+-- for the game to show over it.
 function ns.PriorityCandidates(comp, n)
-  local ready, waiting, seen = {}, {}, {}
+  local ready, waiting, seen, gated = {}, {}, {}, {}
   for _, e in ipairs(comp.priority or {}) do
-    if not seen[e.spell] and LiveOK(e) and not OnCooldown(e.spell) then
+    local ok, gate = false, nil
+    if not seen[e.spell] then ok, gate = ns.LiveGate(e) end
+    if ok and gate then
+      if #ready == 0 and #gated < 2 and not OnCooldown(e.spell) then
+        local u = UsableState(e.spell)
+        if u == "yes" or u == "unknown" then gated[#gated + 1] = { spell = e.spell, gate = gate } end
+      end
+    elseif ok and not OnCooldown(e.spell) then
       local u = UsableState(e.spell)
       if u == "yes" or u == "unknown" then
         ready[#ready + 1] = e.spell
@@ -288,7 +371,7 @@ function ns.PriorityCandidates(comp, n)
   local out = {}
   for _, s in ipairs(ready) do if #out < n then out[#out + 1] = s end end
   for _, s in ipairs(waiting) do if #out < n then out[#out + 1] = s end end
-  return out
+  return out, gated
 end
 
 function ns.HelperUsesPriority(comp)
@@ -310,11 +393,12 @@ local function InCombat()
   return InCombatLockdown() or (UnitAffectingCombat and UnitAffectingCombat("player")) or false
 end
 
--- What the helper suggests next: a list of up to n spells, plus whether the
--- first one is the out-of-combat pull (Charge).
+-- What the helper suggests next: a list of up to n spells, whether the first
+-- one is the out-of-combat pull (Charge), and lines for the game to show over
+-- the first one by your health (see ns.PriorityCandidates).
 function ns.HelperQueue(n, forDisplay, forceMode, all)
   local comp = ns.HelperComp()
-  local q, pull = {}, false
+  local q, pull, gated = {}, false, nil
   if not comp or (#comp.steps == 0 and #(comp.priority or {}) == 0) then return q, pull end
   if not InCombat() and comp.pull and (forDisplay or ns.SpellReady(comp.pull)) then
     q[1] = comp.pull
@@ -327,7 +411,10 @@ function ns.HelperQueue(n, forDisplay, forceMode, all)
     usePriority = ns.HelperUsesPriority(comp)
   end
   if usePriority then
-    for _, s in ipairs(ns.PriorityCandidates(comp, n)) do
+    local cands
+    cands, gated = ns.PriorityCandidates(comp, n)
+    if pull then gated = nil end
+    for _, s in ipairs(cands) do
       if #q < n and s ~= q[1] then q[#q + 1] = s end
     end
     if #q == 0 then
@@ -351,7 +438,7 @@ function ns.HelperQueue(n, forDisplay, forceMode, all)
       q[#q + 1] = step.icon or (step.spells and step.spells[1])
     end
   end
-  return q, pull
+  return q, pull, gated
 end
 
 -- What the bar highlight should point at right now (spell name or nil).

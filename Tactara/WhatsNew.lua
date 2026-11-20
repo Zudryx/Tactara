@@ -9,7 +9,10 @@ local ADDON, ns = ...
 
 ns.WHATS_NEW = {
   { version = "0.19.4", lines = {
-    "- New: `/tac probe health`. WoW Forever hides your current health from addons, so Tactara's defensive suggestions (and Reckless Swings) can't show. Newer versions of the game let an addon show an icon by your health without ever reading it. This test finds out whether Forever allows that: it reports what the game offers and shows two red test squares for 30 seconds that should appear while you're below 90% health. Nothing else changes.",
+    "- **Defensive suggestions work again on WoW Forever.** The game hides your current health from addons, even out of combat, so Shield Wall, Ice Block, Feign Death, self-heals and every other health-based defensive stayed quiet. Tactara now hands each ready defensive to the game with its health line (\"show below 20%\"), and the game shows or hides its icon in the orange slot by your health. Tactara never reads it. When several are ready, the first in the list sits on top, so you see the one that applies.",
+    "- **Reckless Swings (Warrior)** works the same way: when it's ready and ranks above the helper's suggestion, the game shows it over the big icon while you're above 60% health.",
+    "- Because Tactara can't tell when these icons show, they get no glow on your action bars and no defensive sound.",
+    "- New: `/tac probe health` checks that the game still allows this. It reports what the game offers and shows two red test squares for 30 seconds; the 0-1 one should show below 90% health and vanish above it.",
   } },
   { version = "0.19.3", lines = {
     "- **Fixed:** a Lua error when you cast a debuff Tactara keeps a timer for (Serpent Sting, Hunter's Mark, Rend and others) while the game hides your target's ID from addons, which it does in some fights. The helper also missed its next step on that cast. Timers now fall back to \"your current target\", and a cast always moves the helper on. Thanks to the player who tracked down the cause.",

@@ -316,7 +316,7 @@ local function BuildVertical()
 
   Header("Suggestions")
   Check(TactaraCharDB, "interrupts", "Suggest interrupts", "A red slot when your target is casting something you can stop.", true, Refresh)
-  Check(TactaraCharDB, "defensives", "Suggest defensives", "An orange slot when you're low on health and a defensive or self-heal is ready.", true, Refresh)
+  Check(TactaraCharDB, "defensives", "Suggest defensives", "An orange slot when you're low on health and a defensive or self-heal is ready.\n\nWoW Forever hides your health from addons, so the game itself shows or hides these icons at the right health. Tactara never reads it, so they get no glow on your bars.", true, Refresh)
   local function SoundChoices()
     local list = { { "off", "Off" } }
     for _, snd in ipairs(ns.SOUNDS) do list[#list + 1] = { snd.key, snd.label } end
@@ -325,7 +325,7 @@ local function BuildVertical()
   local SOUND_TIP = " Plays on the master channel, so you hear it with game sounds turned down. Picking one plays it."
   Dropdown(TactaraCharDB, "interruptSound", "Sound for interrupts", "A sound when the red interrupt slot lights up (at most every 1.5 seconds)." .. SOUND_TIP, "off",
     SoundChoices, function(v) ns.PlayAlert(v) end)
-  Dropdown(TactaraCharDB, "defensiveSound", "Sound for defensives", "A sound when the orange defensive slot lights up (at most every 10 seconds)." .. SOUND_TIP, "off",
+  Dropdown(TactaraCharDB, "defensiveSound", "Sound for defensives", "A sound when the orange defensive slot lights up (at most every 10 seconds).\n\nWoW Forever hides your health from addons, so Tactara can't tell when a defensive that depends on it shows up, and there's no sound for those. Right now that's all of them." .. SOUND_TIP, "off",
     SoundChoices, function(v) ns.PlayAlert(v) end)
 
   Header("Reminders")

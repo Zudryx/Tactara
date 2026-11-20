@@ -185,6 +185,37 @@ local function SetIcon(holder, spell)
   end
 end
 
+-- Icons the game shows or hides by your health (WoW Forever hides your
+-- health from addons; see "Health the game hides" in Helper.lua). They sit
+-- over a slot, the first in the list on top, each with its own health line,
+-- so you see the one Tactara would pick if it could read your health.
+local function GatedLayer(f, list, i, anchor, size, kind)
+  if list[i] then return list[i] end
+  local h = MakeIcon(f, size, kind)
+  h:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+  list[i] = h
+  return h
+end
+
+local function ShowGated(f, list, anchor, entries, size, kind)
+  entries = entries or {}
+  local base = (anchor.GetFrameLevel and anchor:GetFrameLevel()) or 1
+  for i = 1, math.max(#entries, #list) do
+    local e = entries[i]
+    if e then
+      local h = GatedLayer(f, list, i, anchor, size, kind)
+      if h.look ~= ns.Style.Look() then StyleIcon(h) end
+      -- the first one highest; each needs room for its own text layer (+3)
+      if h.SetFrameLevel then h:SetFrameLevel(base + 5 * (#entries - i + 1)) end
+      if h.over and h.over.SetFrameLevel then h.over:SetFrameLevel(h:GetFrameLevel() + 3) end
+      SetIcon(h, e.spell)
+      ns.ApplyHealthGate(h, e.gate)
+    elseif list[i] then
+      SetIcon(list[i], nil)
+    end
+  end
+end
+
 -- Icons are made as they're needed: big first one, smaller ones after it.
 local function HelperIcon(f, i)
   if f.icons[i] then return f.icons[i] end
@@ -232,6 +263,7 @@ function ns.CreateHelperPopup()
   f.interrupt = MakeIcon(f, UTIL, "interrupt")
   f.defensive = MakeIcon(f, UTIL, "defensive")
   f.defensive:SetPoint("LEFT", f.interrupt, "RIGHT", 10, 0)
+  f.defLayers, f.nowLayers = {}, {}
 
   f.label = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
   f.label:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -2)
@@ -261,7 +293,7 @@ function ns.UpdateHelperPopup()
   if f.interrupt.look ~= look then StyleIcon(f.interrupt); StyleIcon(f.defensive) end
 
   local n, all = ns.IconCount("helperIcons")
-  local shown, pull = ns.HelperQueue(n, true, "priority", all)
+  local shown, pull, gatedNow = ns.HelperQueue(n, true, "priority", all)
   local util = ns.lastUtility or {}
   local slots = all and math.max(#shown, 1) or n
   LayoutPopup(f, slots)
@@ -272,6 +304,8 @@ function ns.UpdateHelperPopup()
     f:Show()
     for i = 1, slots do SetIcon(HelperIcon(f, i), nil) end
     SetIcon(f.interrupt, nil); SetIcon(f.defensive, nil)
+    ShowGated(f, f.defLayers, f.defensive, nil, UTIL, "defensive")
+    ShowGated(f, f.nowLayers, f.icons[1], nil, BIG, "now")
     f.label:SetText("Tactara helper: no rotation yet (drag to move, /tac lock)")
     return
   end
@@ -283,6 +317,9 @@ function ns.UpdateHelperPopup()
   if pull then f.pullTag:Show() else f.pullTag:Hide() end
   SetIcon(f.interrupt, util.interrupt)
   SetIcon(f.defensive, util.defensive)
+  -- the ones only the game can show, by your health
+  ShowGated(f, f.defLayers, f.defensive, util.defensiveGated, UTIL, "defensive")
+  ShowGated(f, f.nowLayers, f.icons[1], gatedNow, BIG, "now")
 
   -- enemy picked, not fighting yet: anything your rotation wants up first
   local prep = ns.Reminders and ns.Reminders.PrePullText()

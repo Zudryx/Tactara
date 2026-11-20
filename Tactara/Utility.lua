@@ -8,7 +8,12 @@
 --     The first spell from the rotation's [interrupt] list that's usable in
 --     your current stance/gear and off cooldown is suggested.
 --   * Defensive (orange): in combat, the first [defensive] line whose checks
---     pass (e.g. "@health 30") and that's ready.
+--     pass (e.g. "@health 30") and that's ready. WoW Forever hides your health
+--     from addons, so lines with a health check go to the game instead: each
+--     ready one gets its own icon in the slot, and the game shows it only
+--     while your health is under its line (Helper.lua, "Health the game
+--     hides"). Tactara never knows which one shows, so those get no bar glow
+--     and no sound.
 -- They're never part of the one-button sequence, so the rotation key won't
 -- waste an interrupt or a big cooldown. The separate Tactara Interrupt key
 -- (/tac bind interrupt) casts the right interrupt for your stance and gear.
@@ -40,14 +45,29 @@ local function InCombat()
   return InCombatLockdown() or (UnitAffectingCombat and UnitAffectingCombat("player")) or false
 end
 
-local function FirstReady(list)
+local MAX_GATED = 4
+
+-- The first ready line. With `gated` (a list), ready lines before it whose
+-- health check only the game can make are added there, in list order.
+local function FirstReady(list, gated)
   for _, e in ipairs(list or {}) do
-    if ns.LiveOK(e) and ns.SpellReady(e.spell) then return e.spell end
+    if gated then
+      local ok, gate = ns.LiveGate(e)
+      if ok and ns.SpellReady(e.spell) then
+        if not gate then return e.spell end
+        local dup = false
+        for _, g in ipairs(gated) do if g.spell == e.spell then dup = true end end
+        if not dup and #gated < MAX_GATED then gated[#gated + 1] = { spell = e.spell, gate = gate } end
+      end
+    elseif ns.LiveOK(e) and ns.SpellReady(e.spell) then
+      return e.spell
+    end
   end
   return nil
 end
 
--- { interrupt = spell or nil, defensive = spell or nil, castState = ... }
+-- { interrupt = spell or nil, defensive = spell or nil, castState = ...,
+--   defensiveGated = { { spell, gate }, ... } for the game to show by health }
 function ns.UtilityPicks()
   local out = {}
   local comp = ns.compiled and ns.compiled.main
@@ -57,7 +77,8 @@ function ns.UtilityPicks()
     if out.castState == "interruptible" then out.interrupt = FirstReady(comp.interrupts) end
   end
   if TactaraCharDB.defensives and InCombat() and comp.defensives and #comp.defensives > 0 then
-    out.defensive = FirstReady(comp.defensives)
+    out.defensiveGated = {}
+    out.defensive = FirstReady(comp.defensives, out.defensiveGated)
   end
   return out
 end

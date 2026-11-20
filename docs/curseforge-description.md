@@ -52,6 +52,7 @@ Rotations are built from the WoW Forever class guides and include Forever's new 
 - **Reminders:** when you target an enemy before a fight, and again right after a fight, Tactara tells you if a buff your rotation keeps up, your pet, or a poison or weapon imbue is missing or running low (like a Blessing with under 5 minutes left), for every class. After a level-up, it lists the new spells waiting at your class trainer, the ones your rotation uses first. It only tells you; you cast them.
 - **Supplies:** a Hunter's arrows or bullets, a Warlock's Soul Shards, and the reagents and totems your spells need (Flash Powder for Vanish, an Ankh, a Fire Totem...), when they run low: under the helper, in chat, and at a vendor that sells them. Tactara never buys anything.
 - **Sound alerts:** pick a sound for when the interrupt or defensive slot lights up. Off until you choose one.
+- **Defensives that work with hidden health:** WoW Forever hides your health from addons, so Tactara hands each defensive to the game with its health line, and the game shows the icon when you're low. Tactara never reads your health.
 - **Helper icons work like action buttons:** each shows its keybind and a cooldown sweep. It turns red when your target is out of range, blue when you're short on mana, rage or energy, and grey when it can't be used.
 - **Works with your bars:** the glow works on Blizzard's action bars and the popular action bar addons, and with spells inside your own macros. It only draws on top of your buttons and never changes them.
 
