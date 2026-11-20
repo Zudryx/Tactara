@@ -40,10 +40,32 @@ function Pr.Snapshot()
   return t
 end
 
+-- This character's entry: "Name - Realm". The game sometimes gives an empty
+-- realm name (seen on WoW Forever with 0.19.3), so the full name is
+-- remembered once it can be read and used again when the realm is missing.
 function Pr.CharKey()
-  local name = UnitName and UnitName("player") or "?"
-  local realm = GetRealmName and GetRealmName() or ""
-  return (realm ~= "" and (name .. " - " .. realm)) or name
+  local name = UnitName and UnitName("player")
+  local realm = GetRealmName and GetRealmName()
+  if ns.IsSecret(name) or type(name) ~= "string" or name == "" then name = nil end
+  if ns.IsSecret(realm) or type(realm) ~= "string" or realm == "" then realm = nil end
+  if name and realm then
+    local key = name .. " - " .. realm
+    if TactaraCharDB then TactaraCharDB.charKey = key end
+    return key
+  end
+  if TactaraCharDB and type(TactaraCharDB.charKey) == "string" then return TactaraCharDB.charKey end
+  name = name or "?"
+  -- not remembered yet (saved by an older version): your one entry with this
+  -- name and class; with more than one, Tactara can't tell which
+  local _, class = UnitClass("player")
+  local found
+  for key, c in pairs(TactaraDB and TactaraDB.characters or {}) do
+    if key:sub(1, #name + 3) == name .. " - " and c.class == class then
+      if found then return name end
+      found = key
+    end
+  end
+  return found or name
 end
 
 -- Keep this character's settings where your other characters can see them.
@@ -51,10 +73,15 @@ function Pr.Save()
   if not (TactaraDB and TactaraCharDB) then return end
   TactaraDB.characters = TactaraDB.characters or {}
   local _, class = UnitClass("player")
-  TactaraDB.characters[Pr.CharKey()] = {
+  local key = Pr.CharKey()
+  TactaraDB.characters[key] = {
     class = class, level = UnitLevel and UnitLevel("player") or nil,
     saved = time and time() or 0, settings = Pr.Snapshot(),
   }
+  -- an entry saved without the realm while the game didn't give it
+  local short = key:match("^(.-) %- ")
+  local stray = short and TactaraDB.characters[short]
+  if stray and stray.class == class then TactaraDB.characters[short] = nil end
 end
 
 -- Put settings in place and redraw everything they touch.

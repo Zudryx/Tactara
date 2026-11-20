@@ -11,6 +11,7 @@ ns.WHATS_NEW = {
   { version = "0.19.3", lines = {
     "- **Fixed:** a Lua error when you cast a debuff Tactara keeps a timer for (Serpent Sting, Hunter's Mark, Rend and others) while the game hides your target's ID from addons, which it does in some fights. The helper also missed its next step on that cast. Timers now fall back to \"your current target\", and a cast always moves the helper on. Thanks to the player who tracked down the cause.",
     "- The same kind of hidden value is now handled everywhere Tactara reads one: your target's creature type, combo points, buff names, cooldowns and range. When the game hides one, Tactara treats it as \"can't tell\" instead of guessing or erroring.",
+    "- **Fixed:** the game sometimes gives an empty realm name, and Tactara then saved your settings under your name alone. In \"Copy settings from\", that made your own character show up as if it were another one. Tactara now remembers each character's full name and realm and keeps using it, and it removes the entry saved without the realm. `/tac probe` also shows your name, the realm the game reports, and the name your settings are saved under.",
   } },
   { version = "0.19.2", lines = {
     "- **Fixed:** if the key bar or the helper popup was set to a size other than 100%, it crept a little across the screen on every login or `/reload`. It now stays where you put it. Thanks to the player who found the cause and sent the fix.",

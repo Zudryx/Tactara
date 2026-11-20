@@ -79,6 +79,12 @@ function ns.Probe()
   ns.Print(("probe - %s, %s, target: %s. Please screenshot this and send it over.")
     :format(inCombat and "|cffff5555IN COMBAT|r" or "|cff00ff00out of combat|r", where, target))
 
+  -- the name your settings are saved under (the game has given an empty realm)
+  Check("you (name, realm, Tactara saves as)", function()
+    local function q(v) if ns.IsSecret(v) or type(v) ~= "string" then return v end return '"' .. v .. '"' end
+    return q(UnitName("player")), q(GetRealmName and GetRealmName()), q(ns.Profiles.CharKey())
+  end)
+
   -- talents / build
   Check("talents (Tactara reader)", function()
     local t = ns.ReadTalents(ns.GetClassToken())

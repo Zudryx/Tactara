@@ -2128,6 +2128,46 @@ do
   check(ns.startedFromDefault == false, "an existing character isn't touched")
   SlashCmdList.TACTARA("defaults clear")
   check(TactaraDB.defaultSettings == nil, "/tac defaults clear")
+  -- The game sometimes gives an empty realm name (seen in 0.19.3: a "Von" entry
+  -- next to "Von - <realm>"). Settings stay under the full name.
+  TactaraDB.characters["Zud - Forever"] = nil
+  TactaraCharDB.charKey = nil
+  GetRealmName = function() return "" end
+  Pr.Save()
+  check(TactaraDB.characters["Zud"] and not TactaraCharDB.charKey, "nothing known yet: saved under the name alone")
+  GetRealmName = function() return "Forever" end
+  Pr.Save()
+  check(TactaraCharDB.charKey == "Zud - Forever" and TactaraDB.characters["Zud - Forever"],
+    "the full name is remembered once the realm can be read")
+  check(TactaraDB.characters["Zud"] == nil, "and the entry without the realm is cleaned up")
+  GetRealmName = function() return "" end
+  TactaraDB.characters["Zud - Forever"].saved = 5
+  Pr.Save()
+  check(TactaraDB.characters["Zud"] == nil and TactaraDB.characters["Zud - Forever"].saved ~= 5,
+    "realm empty: still saved under the full name")
+  check(Pr.CharKey() == "Zud - Forever", "and that's the name used for 'your other characters'")
+  local listed = false
+  for _, o in ipairs(Pr.Others()) do if o.key:find("^Zud") then listed = true end end
+  check(not listed, "this character isn't listed as one of your others")
+  -- an older save (before Tactara remembered the name): the one entry with this name and class
+  TactaraCharDB.charKey = nil
+  check(Pr.CharKey() == "Zud - Forever", "not remembered yet: finds your one entry with this name and class")
+  TactaraDB.characters["Zud - Other Realm"] = { class = "WARRIOR", saved = 1, settings = {} }
+  check(Pr.CharKey() == "Zud", "two possible entries: can't tell, uses the name alone")
+  TactaraDB.characters["Zud - Other Realm"] = nil
+  local realSecret = issecretvalue
+  issecretvalue = function(v) return v == "SECRET" end
+  GetRealmName = function() return "SECRET" end
+  TactaraCharDB.charKey = "Zud - Forever"
+  local okK, key = pcall(Pr.CharKey)
+  check(okK and key == "Zud - Forever", "realm hidden by the game: the remembered name, no error")
+  issecretvalue = realSecret
+  -- /tac probe shows what the game says, to track this down
+  GetRealmName = function() return "" end
+  chat = {}
+  SlashCmdList.TACTARA("probe")
+  check(table.concat(chat, "\n"):find('you %(name, realm, Tactara saves as%): "Zud", "", "Zud %- Forever"'),
+    "probe shows name, realm and the saved name")
   UnitName, GetRealmName = nil, nil
 end
 
