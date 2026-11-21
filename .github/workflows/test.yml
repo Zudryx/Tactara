@@ -21,3 +21,5 @@ jobs:
         run: lua5.4 tests/smoke_test.lua Tactara
       - name: Helper, interrupts, defensives, build detection
         run: lua5.4 tests/helper_test.lua Tactara
+      - name: QA sweep (every class, rotation and level through random fights)
+        run: for c in WARRIOR PALADIN HUNTER ROGUE PRIEST SHAMAN MAGE WARLOCK DRUID; do lua5.4 tests/qa_sweep.lua Tactara $c 1 40 || exit 1; done

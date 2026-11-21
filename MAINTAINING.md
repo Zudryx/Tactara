@@ -39,9 +39,12 @@ python3 tests/runlua.py tests/syntax.lua Tactara
 python3 tests/runlua.py tests/compile_test.lua Tactara
 python3 tests/runlua.py tests/smoke_test.lua Tactara
 python3 tests/runlua.py tests/helper_test.lua Tactara
+python3 tests/qa_sweep.py
 ```
 
-(or `lua5.4 tests/<file>.lua Tactara`). All must pass. If a test fails because it hard-codes the old rotation, update the test, and say so in the pull request.
+(or `lua5.4 tests/<file>.lua Tactara`). All must pass.
+
+`tests/qa_sweep.py` is the QA sweep: for each class it loads Tactara in a fresh stand-in game that follows WoW Forever's rules (your health, power and the target's health always hidden; the target's name, ID, creature type, auras, cooldowns, range and casts hidden at random), then runs every built-in rotation at every 5 levels through random fights: in and out of combat, health from full to near death, 0 to 8 enemies, casts that can and can't be interrupted, cooldowns and Rage/Mana short, mounted, every helper mode. It presses the key, casts what's suggested, and checks that nothing raises a Lua error and that the helper never shows a spell you don't have, a defensive out of combat or at full health, an interrupt on a cast that can't be interrupted, or a health icon Tactara read itself. The fights are random but repeatable: `python3 tests/qa_sweep.py <seed> <fights per level>` (default seed 1, 40 fights). One class: `python3 tests/runlua.py tests/qa_sweep.lua Tactara HUNTER 1 40`. When the game turns out to hide something new, add it to the stand-in at the top of `tests/qa_sweep.lua`. If a test fails because it hard-codes the old rotation, update the test, and say so in the pull request.
 
 ## 4. Version, changelog, pull request
 

@@ -59,6 +59,7 @@ lua5.4 tests/syntax.lua Tactara        # syntax + version consistency
 lua5.4 tests/compile_test.lua Tactara  # rotation parser/compiler, every rotation at levels 1-60
 lua5.4 tests/smoke_test.lua Tactara    # whole addon: events, secure buttons, editor, key binding
 lua5.4 tests/helper_test.lua Tactara   # helper, timers, interrupts, defensives, build detection
+python3 tests/qa_sweep.py              # QA sweep: every class, rotation and level through random fights
 ```
 
 (If you only have Python and the Lua library: `python3 tests/runlua.py tests/<file>.lua Tactara`.)

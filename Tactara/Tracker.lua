@@ -255,11 +255,11 @@ function ns.TrackerSummary()
   local parts = {}
   for spell, exp in pairs(tracked.player.me or {}) do
     local left = exp - GetTime()
-    if left > 0 then parts[#parts + 1] = ("%s %ds"):format(spell, left) end
+    if left > 0 then parts[#parts + 1] = ("%s %ds"):format(spell, math.floor(left)) end
   end
   for spell in pairs(watch) do
     local left = ns.TrackedRemaining("target", spell)
-    if left and watch[spell] == "target" then parts[#parts + 1] = ("%s on target %ds"):format(spell, left) end
+    if left and watch[spell] == "target" then parts[#parts + 1] = ("%s on target %ds"):format(spell, math.floor(left)) end
   end
   table.sort(parts)
   return #parts > 0 and table.concat(parts, ", ") or "none"

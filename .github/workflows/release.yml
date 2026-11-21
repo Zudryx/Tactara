@@ -42,6 +42,7 @@ jobs:
           lua5.4 tests/compile_test.lua Tactara
           lua5.4 tests/smoke_test.lua Tactara
           lua5.4 tests/helper_test.lua Tactara
+          for c in WARRIOR PALADIN HUNTER ROGUE PRIEST SHAMAN MAGE WARLOCK DRUID; do lua5.4 tests/qa_sweep.lua Tactara $c 1 40 || exit 1; done
 
       - name: Read version
         id: v
