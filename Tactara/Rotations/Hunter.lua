@@ -196,7 +196,7 @@ name: Hunter - Survival
 class: HUNTER
 detect: Strider Kick
 tree: Survival
-notes: Melee Hunter: shoot as they come in, then Strider Kick, Mongoose Bite, Raptor Strike and Immolation Trap at your feet in melee. Aspect of the Beast from 30 (Aspect of the Hawk before). Works with or without a pet (Lone Wolf).
+notes: Melee Hunter: shoot as they come in, then Strider Kick, Mongoose Bite, Raptor Strike and Immolation Trap at your feet in melee. Aspect of the Beast from 30 (Aspect of the Hawk before). Keeps your pet out; if you take Lone Wolf, it stops asking for one.
 
 [keypress]
 /petattack [harm,nodead]

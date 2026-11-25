@@ -30,7 +30,7 @@ class: WARLOCK
 detect: Wrack
 tree: Affliction
 default: yes
-notes: DoTs: Bane of Agony to pull, Corruption, Immolate and Siphon Life, then Wrack (40), Drain Life and Shadow Bolt. Voidwalker to tank while leveling.
+notes: DoTs: Bane of Agony to pull, Corruption, Immolate and Siphon Life, then Wrack (40) as your filler, Drain Life and Shadow Bolt before it. Voidwalker to tank while leveling; once you sacrifice a demon (Demonic Sacrifice) it stops suggesting one.
 
 [keypress]
 /petattack [harm,nodead]
@@ -50,7 +50,10 @@ notes: DoTs: Bane of Agony to pull, Corruption, Immolate and Siphon Life, then W
 /cast Wrack
 
 [loop]
-3x /cast Shadow Bolt
+# Wrack is the filler once you have it (Icy Veins' Wrack build casts Shadow
+# Bolt only when Nightfall makes it instant); Shadow Bolt before that.
+3x /cast Wrack
+    /cast Shadow Bolt
 2x /cast Wrack
     /cast Drain Life
     /cast Shadow Bolt
@@ -76,8 +79,11 @@ notes: DoTs: Bane of Agony to pull, Corruption, Immolate and Siphon Life, then W
 [priority]
 /cast Demon Armor @missing Demon Armor
 /cast Demon Skin @missing Demon Skin @unless Demon Armor
-/cast Summon Voidwalker @nopet
-/cast Summon Imp @nopet @unless Summon Voidwalker
+# Icy Veins' builds take Demonic Sacrifice (Affliction 41, Destruction 55):
+# you sacrifice a demon for a two-hour buff that summoning any demon
+# removes, so once you know it Tactara stops suggesting one.
+/cast Summon Voidwalker @nopet @unless Demonic Sacrifice
+/cast Summon Imp @nopet @unless Summon Voidwalker @unless Demonic Sacrifice
 /cast Rain of Fire @enemies 4
 /cast Bane of Agony @nodebuff Bane of Agony
 /cast Corruption @nodebuff Corruption
@@ -173,7 +179,7 @@ name: Warlock - Destruction
 class: WARLOCK
 detect: Conflagrate
 tree: Destruction
-notes: Immolate up, Conflagrate on cooldown, Incinerate (40; Shadow Bolt before) to fill, Corruption and Bane of Agony on longer fights.
+notes: Immolate up, Conflagrate on cooldown, Incinerate (40; Shadow Bolt before) to fill, Corruption and Bane of Agony on longer fights; once you sacrifice a demon (Demonic Sacrifice) it stops suggesting one.
 
 [keypress]
 /petattack [harm,nodead]
@@ -216,8 +222,11 @@ notes: Immolate up, Conflagrate on cooldown, Incinerate (40; Shadow Bolt before)
 [priority]
 /cast Demon Armor @missing Demon Armor
 /cast Demon Skin @missing Demon Skin @unless Demon Armor
-/cast Summon Voidwalker @nopet
-/cast Summon Imp @nopet @unless Summon Voidwalker
+# Icy Veins' builds take Demonic Sacrifice (Affliction 41, Destruction 55):
+# you sacrifice a demon for a two-hour buff that summoning any demon
+# removes, so once you know it Tactara stops suggesting one.
+/cast Summon Voidwalker @nopet @unless Demonic Sacrifice
+/cast Summon Imp @nopet @unless Summon Voidwalker @unless Demonic Sacrifice
 /cast Rain of Fire @enemies 4
 /cast Immolate @nodebuff Immolate
 /cast Conflagrate

@@ -83,32 +83,31 @@ ns.RegisterTalentBuild([=[
 name: Rogue - Subtlety
 class: ROGUE
 tree: Subtlety
-source: Icy Veins leveling build (15/5/31), November 2026
-notes: Premeditation at 23, Ghostly Strike at 25, Hemorrhage at 30 and Death Mark at 42, then Combat and Assassination.
+source: Icy Veins leveling build (12/8/31), updated November 2026
+notes: Hemorrhage as early as possible: Dirty Deeds makes Garrote cheaper, Premeditation at 20, Ghostly Strike at 25, Hemorrhage at 30 and Death Mark at 40, then Combat and Assassination.
 order:
 Opportunity 5
-Improved Ambush 3
-Setup 2
-Serrated Blades 3
-Premeditation
-Dirty Deeds
-Ghostly Strike
-Setup
 Camouflage 3
-Hemorrhage
-Efficient Strikes 2
-Preparation
+Dirty Deeds 2
+Premeditation
 Initiative 3
+Serrated Blades
+Ghostly Strike
+Serrated Blades 2
+Master of Deception 2
+Hemorrhage
+Preparation
+Setup 3
 Boot Knife 5
 Death Mark
-Coup de Grace 3
-Remorseless Attacks 2
-Malice 3
+Efficient Strikes 2
+Malice 5
 Ruthlessness 3
-Malice 2
-Blood Splatter
-Lethality 2
 Improved Slice and Dice 2
+Blood Splatter
+Coup de Grace 3
+Precision 3
+Improved Slice and Dice
 ]=])
 
 -- Level 60 builds: the main raid and dungeon build from each Icy Veins

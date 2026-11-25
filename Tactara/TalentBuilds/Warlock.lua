@@ -110,12 +110,13 @@ name: Warlock - Affliction (level 60)
 class: WARLOCK
 tree: Affliction
 level: 60
-source: Icy Veins level 60 build "Wrack" (33/0/18), November 2026
-notes: Wrack at the bottom of Affliction, plus Destruction for Improved Shadow Bolt and Bane.
+source: Icy Veins level 60 build "Wrack" (35/11/5), updated November 16, 2026
+notes: Wrack at the bottom of Affliction, Demonology for Demonic Sacrifice (sacrifice your Imp for 15% Shadow damage and play without a demon), and Improved Shadow Bolt.
 order:
 Improved Life Tap 2
 Suppression 5
 Improved Corruption 5
+Improved Bane of Agony 2
 Amplify Curse
 Pandemic 3
 Malevolence 5
@@ -124,10 +125,11 @@ Siphon Life
 Soul Siphon 3
 Shadow Mastery 5
 Wrack
+Demonic Embrace 5
+Demonic Aegis 2
+Fel Vitality 3
+Demonic Sacrifice
 Improved Shadow Bolt 5
-Bane 5
-Ruin 5
-Agonizing Flames 3
 ]=])
 
 ns.RegisterTalentBuild([=[

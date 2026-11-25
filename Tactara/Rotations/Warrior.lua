@@ -129,7 +129,7 @@ class: WARRIOR
 detect: Bloodthirst
 tree: Fury
 weapon: dual
-notes: Dual wield. Battle Stance while leveling; once you learn Whirlwind (36) it fights in Berserker Stance and goes back to Battle out of combat so Charge works. Whirlwind and Bloodthirst first.
+notes: Dual wield. Battle Stance while leveling; once you learn Whirlwind (36) it fights in Berserker Stance and goes back to Battle out of combat so Charge works. Whirlwind and Bloodthirst first; Rend, Overpower and Thunder Clap stop at 36. Death Wish, Reckless Swings and Berserker Rage between your attacks keep Gore Drinker healing you.
 
 # Stance numbers assume the usual order: 1 Battle, 2 Defensive, 3 Berserker.
 [keypress]
@@ -177,18 +177,26 @@ notes: Dual wield. Battle Stance while leveling; once you learn Whirlwind (36) i
 1x /cast Heroic Strike @unless Cleave
 
 [priority]
+# Icy Veins' Fury leveling guide (rewritten November 2026): Victory Rush is
+# free damage, Death Wish when you can keep attacking, Whirlwind ahead of
+# Bloodthirst; Rend, Overpower and Thunder Clap only until Whirlwind (36).
+# Bloodrage, Death Wish, Reckless Swings and Berserker Rage also start Gore
+# Drinker's healing; the game hides your buffs in combat, so Tactara can't
+# count its stacks for you.
 /cast Battle Shout @missing Battle Shout
 /cast Bloodrage
+/cast Victory Rush
+/cast Death Wish
 /cast Whirlwind
 /cast Bloodthirst
 /cast Execute
-/cast Thunder Clap @enemies 3
-/cast Overpower
-/cast Victory Rush
+/cast Thunder Clap @enemies 3 @unless Whirlwind
+/cast Overpower @unless Whirlwind
 # Reckless Swings (talent): extra Rage for 25% of your base health, when you
 # have health to spare (Icy Veins). Helper only: the key can't check health.
 /cast Reckless Swings @health above 60
-/cast Rend @nodebuff Rend
+/cast Berserker Rage
+/cast Rend @nodebuff Rend @unless Whirlwind
 /cast Cleave @enemies 2
 /cast Heroic Strike
 

@@ -48,30 +48,28 @@ ns.RegisterTalentBuild([=[
 name: Warrior - Fury
 class: WARRIOR
 tree: Fury
-source: Icy Veins leveling build (16/33/2), November 2026
-notes: Dual wield. Death Wish at 30 and Bloodthirst at 40, then Arms for Deep Wounds and Anger Management.
+source: Icy Veins leveling build (11/38/2), updated November 2026
+notes: Dual wield from 20. Blood Craze and Gore Drinker heal you while you fight; Death Wish at 30, Reckless Swings at 34, Improved Whirlwind at 35 and Bloodthirst at 40, then Deflection and Arms for Tactical Mastery and Anger Management.
 order:
 Cruelty 5
 Unbridled Wrath 5
 Furious Precision 3
-Enrage 2
+Blood Craze 2
 Dual Wield Specialization 5
 Death Wish
+Blood Craze
+Gore Drinker 2
 Reckless Swings
-Improved Berserker Rage 2
-Enrage
 Improved Whirlwind 2
 Flurry 3
 Bloodthirst
-Improved Rend 3
-Deflection 2
+Improved Berserker Rage 2
+Deflection 5
 Improved Charge 2
-Improved Overpower 2
 Improved Tactical Mastery 3
 Anger Management
 Improved Bloodrage 2
-Enrage 2
-Deep Wounds 3
+Enrage 5
 ]=])
 
 ns.RegisterTalentBuild([=[

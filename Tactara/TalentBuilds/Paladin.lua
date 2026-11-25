@@ -170,7 +170,7 @@ name: Paladin - Holy (level 60)
 class: PALADIN
 tree: Holy
 level: 60
-source: Icy Veins level 60 build "Light's Vigil" (31/8/12), November 2026
+source: Icy Veins level 60 build "Light's Vigil" (31/8/12), updated November 16, 2026
 notes: Light's Vigil at the bottom of Holy, plus Retribution for Benediction and Conviction; Protection for Divine Intellect and Sacred Duty.
 order:
 Spiritual Focus 5
@@ -179,7 +179,7 @@ Reverence 2
 Purifying Power 2
 Divine Favor
 Illumination 5
-Holy Conduit
+Divine Precision
 Infusion of Light 2
 Oath of Light
 Holy Shock

@@ -102,7 +102,7 @@ D.TALENTS = {
   -- Spearing Strike (Arms) and Reckless Swings (Fury) are row 4 (level 25);
   -- the Icy Veins builds take Reckless Swings at 31 Fury, 56 Arms, 59 Protection.
   arms = { {25, "Spearing Strike"}, {30, "Sweeping Strikes"}, {40, "Mortal Strike"}, {56, "Reckless Swings"} },
-  fury = { {31, "Reckless Swings"}, {40, "Bloodthirst"} },
+  fury = { {30, "Death Wish"}, {32, "Gore Drinker"}, {34, "Reckless Swings"}, {40, "Bloodthirst"} },
   prot = { {30, "Last Stand"}, {40, "Shield Slam"}, {30, "Concussion Blow"}, {59, "Reckless Swings"} },
   ret = { {20, "Seal of Command"}, {25, "Sacred Arbiter"}, {30, "Repentance"}, {40, "Twist of Light"} },
   protpal = { {20, "Improved Seal of Fury"}, {25, "Swift Judgement"}, {30, "Templar's Bulwark"}, {35, "Holy Shield"} },
@@ -124,9 +124,10 @@ D.TALENTS = {
   frost = { {20, "Ice Lance"}, {25, "Ice Block"}, {30, "Cold Snap"}, {30, "Fingers of Frost"}, {40, "Ice Barrier"} },
   fire = { {20, "Pyroblast"}, {25, "Heating Up"}, {30, "Blast Wave"}, {40, "Combustion"} },
   arcane = { {15, "Missile Barrage"}, {20, "Arcane Blast"}, {25, "Arcane Wrath"}, {30, "Presence of Mind"}, {40, "Arcane Power"} },
-  affli = { {30, "Siphon Life"}, {40, "Wrack"} },
+  -- Demonic Sacrifice: Icy Veins' Affliction (41) and Destruction (55) builds
+  affli = { {30, "Siphon Life"}, {40, "Wrack"}, {41, "Demonic Sacrifice"} },
   demo = { {20, "Fel Domination"}, {30, "Demonic Sacrifice"}, {40, "Demonic Pact"} },
-  destro = { {20, "Shadowburn"}, {30, "Conflagrate"}, {30, "Bane of Havoc"}, {40, "Incinerate"} },
+  destro = { {20, "Shadowburn"}, {30, "Conflagrate"}, {30, "Bane of Havoc"}, {40, "Incinerate"}, {55, "Demonic Sacrifice"} },
   cat = { {20, "Feral Charge"}, {25, "Lacerate"}, {25, "Shifting Power"} },
   bear = { {20, "Feral Charge"}, {25, "Lacerate"}, {25, "Primal Bite"}, {35, "Natural Reaction"} },
   balance = { {25, "Insect Swarm"}, {30, "Eclipse"}, {40, "Moonkin Form"} },

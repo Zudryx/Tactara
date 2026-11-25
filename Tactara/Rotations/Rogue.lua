@@ -14,7 +14,8 @@
 --     before Eviscerate.
 --   * Combat: Blade Flurry and Adrenaline Rush; Riposte after a parry.
 --   * Subtlety: Hemorrhage builds, Rupture and Ghostly Strike, Premeditation
---     from Stealth.
+--     and Garrote from Stealth (Icy Veins: always open with Garrote once
+--     learned; Dirty Deeds makes it cheaper).
 --
 -- WoW doesn't tell addons your Energy or combo points, so the key plays a
 -- fixed mix: about four builders for each finisher. A finisher with no
@@ -156,11 +157,11 @@ class: ROGUE
 detect: Hemorrhage
 tree: Subtlety
 weapon: dual
-notes: Opens from Stealth with Premeditation and Cheap Shot, builds with Hemorrhage (Sinister Strike before 30), keeps Rupture and Slice and Dice up, Ghostly Strike on cooldown, Death Mark (40) at 5 combo points.
+notes: Opens from Stealth with Premeditation and Garrote (14), builds with Hemorrhage (Sinister Strike before 30), keeps Rupture and Slice and Dice up, Ghostly Strike on cooldown, Death Mark (40) at 5 combo points.
 
 [keypress]
 /cast [harm,nodead,stealth] Premeditation
-/cast [nocombat,harm,nodead,stealth] Cheap Shot
+/cast [nocombat,harm,nodead,stealth] Garrote
 /cast [nocombat,harm,nodead,nostealth] Stealth
 /startattack [harm,nodead,nostealth]
 

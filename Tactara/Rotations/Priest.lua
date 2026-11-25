@@ -7,7 +7,11 @@
 -- Mobalytics, and Blizzard's Forever class deep dive (checked November
 -- 2026). Forever changes that matter here:
 --   * Every Priest learns Devouring Plague and Fear Ward at 20, Divine Spirit
---     at 30 and Shadow Word: Death (new) at 32.
+--     at 30 and Shadow Word: Death (new) at 32. Shadow Word: Death hits you
+--     for 30% of your maximum health when it doesn't kill the target (spell
+--     data, November 2026), and the game hides the target's health from
+--     addons, so no rotation casts it: it's a line you can turn on in
+--     [priority] if you want the helper to show it.
 --   * Shadowform now allows every non-healing spell.
 --   * Discipline gets Penance (channel: damage or healing), Holy gets
 --     Holy Binding (a passive: your Flash Heal on someone else heals you
@@ -26,29 +30,23 @@ class: PRIEST
 detect: Shadowform
 tree: Shadow
 default: yes
-notes: Shadow Word: Pain and Devouring Plague up, Mind Blast and Shadow Word: Death on cooldown, Vampiric Embrace, Mind Flay to fill. Let Mind Flay finish before the next press when you can: pressing during the channel cuts it short.
+notes: Mind Blast to pull, Shadow Word: Pain and Devouring Plague up, Mind Blast on cooldown, Vampiric Embrace, Mind Flay to fill. Let Mind Flay finish before the next press when you can: pressing during the channel cuts it short.
 
 [opener]
+/cast Mind Blast
+    /cast Smite
 /cast Shadow Word: Pain
     /cast Smite
 /cast Devouring Plague
-    /cast Mind Blast
-    /cast Smite
-/cast Mind Blast
     /cast Vampiric Embrace
     /cast Smite
 
 [loop]
 3x /cast Mind Blast
-    /cast Shadow Word: Death
     /cast Mind Flay
     /cast Smite
 3x /cast Mind Flay
     /cast Mind Blast
-    /cast Smite
-1x /cast Shadow Word: Death
-    /cast Mind Blast
-    /cast Mind Flay
     /cast Smite
 1x /cast Shadow Word: Pain
     /cast Mind Flay
@@ -69,8 +67,10 @@ notes: Shadow Word: Pain and Devouring Plague up, Mind Blast and Shadow Word: De
 /cast Devouring Plague @nodebuff Devouring Plague
 /cast Vampiric Embrace @nodebuff Vampiric Embrace
 /cast Mind Blast
-/cast Shadow Word: Death
 /cast Mind Flay
+# Shadow Word: Death hurts you for 30% of your health when it doesn't kill.
+# Remove the # to have the helper show it anyway:
+# /cast Shadow Word: Death
 /cast Smite
 /cast Shoot
 
@@ -112,8 +112,6 @@ notes: Solo damage for a Discipline Priest: Holy Fire and Shadow Word: Pain up, 
     /cast Smite
 1x /cast Shadow Word: Pain
     /cast Smite
-1x /cast Shadow Word: Death
-    /cast Smite
 
 [priority]
 /cast Power Word: Fortitude @missing Power Word: Fortitude
@@ -123,7 +121,9 @@ notes: Solo damage for a Discipline Priest: Holy Fire and Shadow Word: Pain up, 
 /cast Shadow Word: Pain @nodebuff Shadow Word: Pain
 /cast Penance
 /cast Mind Blast
-/cast Shadow Word: Death
+# Shadow Word: Death hurts you for 30% of your health when it doesn't kill.
+# Remove the # to have the helper show it anyway:
+# /cast Shadow Word: Death
 /cast Smite
 /cast Shoot
 
@@ -162,8 +162,6 @@ notes: Solo damage for a Holy Priest: Holy Fire and Shadow Word: Pain up, Mind B
     /cast Smite
 1x /cast Shadow Word: Pain
     /cast Smite
-1x /cast Shadow Word: Death
-    /cast Smite
 
 [aoe]
 3x /cast Holy Nova
@@ -183,7 +181,9 @@ notes: Solo damage for a Holy Priest: Holy Fire and Shadow Word: Pain up, Mind B
 /cast Holy Fire @nodebuff Holy Fire
 /cast Shadow Word: Pain @nodebuff Shadow Word: Pain
 /cast Mind Blast
-/cast Shadow Word: Death
+# Shadow Word: Death hurts you for 30% of your health when it doesn't kill.
+# Remove the # to have the helper show it anyway:
+# /cast Shadow Word: Death
 /cast Smite
 /cast Shoot
 

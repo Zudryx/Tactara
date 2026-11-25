@@ -17,8 +17,8 @@ ns.RegisterTalentBuild([=[
 name: Priest - Shadow
 class: PRIEST
 tree: Shadow
-source: Icy Veins leveling build (13/3/35), November 2026
-notes: Spirit Tap early, Mind Flay at 22, Vampiric Embrace at 27 and Shadowform at 42, then Discipline for Mental Strength and Meditation.
+source: Icy Veins leveling build, no-respec path (13/3/35), updated November 2026
+notes: Spirit Tap early, Mind Flay at 22, Vampiric Embrace at 27 and Shadowform at 42, then Discipline for Twin Disciplines, Mental Strength and Meditation. Icy Veins also offers a Meditation build to 40 with a respec into Shadow there; this is their no-respec path.
 order:
 Wand Specialization 2
 Spirit Tap 5
@@ -27,19 +27,19 @@ Improved Mind Blast 3
 Mind Flay
 Improved Mind Flay 2
 Improved Mind Blast
-Shadow Reach
+Shadow Focus
 Vampiric Embrace
 Dark Inspiration 5
 Devouring Contagion 2
-Silence
-Shadow Weaving
+Shadow Weaving 2
 Darkness 5
 Shadowform
-Twin Disciplines 3
-Mental Strength 5
+Twin Disciplines 5
+Mental Strength 3
 Meditation 3
 Twilight Focus 3
-Shadow Weaving 2
+Shadow Weaving
+Silence
 Shadow Focus 2
 ]=])
 

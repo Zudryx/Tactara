@@ -1389,6 +1389,70 @@ do
     "Enhancement with Water Shield: Water Shield, no Lightning Shield")
 end
 
+-- Icy Veins updates of November 2026 (0.19.5)
+do
+  local function Comp(name, knownSet)
+    local env = { isKnown = function(sp) return knownSet[sp] == true end, hasBuff = function() return false end }
+    return ns.Compile(ns.Parse(ns.GetRotationText(name)), "main", env)
+  end
+  local function Set(list) local t = {} for _, n in ipairs(list) do t[n] = true end return t end
+  local function inPriority(c, spell)
+    for i, e in ipairs(c.priority or {}) do if e.spell == spell then return i end end
+  end
+  local function keyText(c)
+    local t = {}
+    for _, st in ipairs(c.steps) do t[#t + 1] = st.text end
+    return table.concat(t, "\n")
+  end
+  -- Fury: Rend, Overpower and Thunder Clap only until Whirlwind; Victory Rush,
+  -- Death Wish and Berserker Rage in the helper's list
+  local furyBase = { "Battle Shout", "Bloodrage", "Victory Rush", "Rend", "Overpower", "Thunder Clap", "Heroic Strike",
+    "Cleave", "Execute", "Death Wish", "Berserker Rage", "Battle Stance", "Berserker Stance", "Charge" }
+  local pre = Comp("Warrior - Fury", Set(furyBase))
+  check(inPriority(pre, "Rend") and inPriority(pre, "Overpower") and inPriority(pre, "Thunder Clap"),
+    "Fury before Whirlwind: Rend, Overpower and Thunder Clap")
+  local withWW = Set(furyBase); withWW.Whirlwind = true; withWW.Bloodthirst = true
+  local post = Comp("Warrior - Fury", withWW)
+  check(not inPriority(post, "Rend") and not inPriority(post, "Overpower") and not inPriority(post, "Thunder Clap"),
+    "Fury with Whirlwind: no Rend, Overpower or Thunder Clap")
+  check(inPriority(post, "Victory Rush") < inPriority(post, "Whirlwind") and inPriority(post, "Death Wish")
+    and inPriority(post, "Berserker Rage") and inPriority(post, "Whirlwind") < inPriority(post, "Bloodthirst"),
+    "Fury: Victory Rush and Death Wish before Whirlwind, Whirlwind before Bloodthirst, Berserker Rage in")
+  -- Priests: Shadow Word: Death hurts you when it doesn't kill; no rotation casts it
+  for _, name in ipairs({ "Priest - Shadow", "Priest - Discipline", "Priest - Holy" }) do
+    local c = Comp(name, Set({ "Shadow Word: Death", "Mind Blast", "Shadow Word: Pain", "Smite", "Mind Flay", "Holy Fire",
+      "Penance", "Devouring Plague", "Power Word: Fortitude", "Inner Fire", "Shoot" }))
+    check(not inPriority(c, "Shadow Word: Death") and not keyText(c):find("Shadow Word: Death", 1, true),
+      name .. ": no Shadow Word: Death")
+  end
+  local shadow = Comp("Priest - Shadow", Set({ "Mind Blast", "Shadow Word: Pain", "Smite", "Devouring Plague", "Mind Flay" }))
+  check(shadow.steps[1] and shadow.steps[1].spells and shadow.steps[1].spells[1] == "Mind Blast", "Shadow pulls with Mind Blast")
+  -- Subtlety opens from Stealth with Garrote
+  local sub = Comp("Rogue - Subtlety", Set({ "Garrote", "Cheap Shot", "Stealth", "Premeditation", "Hemorrhage", "Sinister Strike" }))
+  check(keyText(sub):find("stealth%] Garrote") and not keyText(sub):find("Cheap Shot", 1, true), "Subtlety opens with Garrote")
+  -- Warlocks: no demon suggested once Affliction or Destruction know Demonic
+  -- Sacrifice (summoning removes its buff); Demonology keeps its demon
+  local lock = { "Summon Voidwalker", "Summon Imp", "Shadow Bolt", "Corruption", "Immolate", "Demon Skin" }
+  for _, name in ipairs({ "Warlock - Affliction", "Warlock - Destruction", "Warlock - Demonology" }) do
+    local without = Comp(name, Set(lock))
+    local withDS = Set(lock); withDS["Demonic Sacrifice"] = true
+    local with = Comp(name, withDS)
+    check(inPriority(without, "Summon Voidwalker"), name .. ": Voidwalker suggested before Demonic Sacrifice")
+    if name == "Warlock - Demonology" then
+      check(inPriority(with, "Summon Voidwalker"), name .. ": still suggests a demon with Demonic Sacrifice")
+    else
+      check(not inPriority(with, "Summon Voidwalker") and not inPriority(with, "Summon Imp"),
+        name .. ": no demon suggested once you know Demonic Sacrifice")
+    end
+  end
+  -- Affliction's key: Wrack is the filler once you have it, Shadow Bolt before
+  local affPre = Comp("Warlock - Affliction", Set({ "Shadow Bolt", "Corruption", "Bane of Agony" }))
+  local affWrack = Comp("Warlock - Affliction", Set({ "Shadow Bolt", "Corruption", "Bane of Agony", "Wrack" }))
+  local function loopFirst(c) local st = c.steps[c.loopStart] return st and st.spells and st.spells[1] end
+  check(loopFirst(affPre) == "Shadow Bolt" and loopFirst(affWrack) == "Wrack",
+    "Affliction's loop: Shadow Bolt before Wrack, Wrack after: " .. tostring(loopFirst(affPre)) .. ", " .. tostring(loopFirst(affWrack)))
+end
+
 -- two rotations on one tree: the one whose "prefer:" talents you took wins
 do
   local realList, realBuild = ns.ListRotations, ns.ReadBuild
@@ -1479,7 +1543,7 @@ do
   -- the built-in builds are legal, 51 points each
   local builds = T.BuildsForClass("WARRIOR")
   check(#builds == 6, "six Warrior builds (three leveling, three level 60)")
-  local want = { ["Warrior - Arms"] = "33/16/2", ["Warrior - Fury"] = "16/33/2", ["Warrior - Protection"] = "4/16/31",
+  local want = { ["Warrior - Arms"] = "33/16/2", ["Warrior - Fury"] = "11/38/2", ["Warrior - Protection"] = "4/16/31",
     ["Warrior - Arms (level 60)"] = "32/17/2", ["Warrior - Fury (level 60)"] = "18/33/0", ["Warrior - Protection (level 60)"] = "5/15/31" }
   for _, b in ipairs(builds) do
     local split, sim = T.Split(b, tree)

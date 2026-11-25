@@ -77,10 +77,9 @@ ns.RegisterTalentBuild([=[
 name: Hunter - Survival
 class: HUNTER
 tree: Survival
-source: Icy Veins leveling build (0/17/34), November 2026
-notes: Lethal Attacks first, Survival from 15: Strider Kick at 35 and Lacerating Strikes at 45, then Marksmanship for Careful Aim.
+source: Icy Veins leveling build (7/10/34), updated November 2026
+notes: Survival first: Strider Kick at 30 with Resourcefulness and Expose Prey, then Beast Mastery for Deadly Aspects (35) and Focused Fire, Marksmanship for Lethal Attacks and Careful Aim, and back to Survival for Lightning Reflexes and Lacerating Strikes (57). Keeps your pet.
 order:
-Lethal Attacks 5
 Improved Tracking 5
 Savage Strikes 2
 Survivalist 3
@@ -88,17 +87,16 @@ Surefooted 3
 Clever Traps 2
 Predator's Edge 5
 Strider Kick
+Resourcefulness 2
 Expose Prey 2
-Survivalist's Discipline 2
+Deadly Aspects 5
+Focused Fire 2
+Lethal Attacks 5
+Careful Aim 5
 Lightning Reflexes 5
 Lacerating Strikes
-Resourcefulness
 Survival Tactics 2
-Careful Aim 5
-Lone Wolf
-Improved Stings 3
-Efficiency
-Mortal Shots 2
+Survivalist's Discipline
 ]=])
 
 -- Level 60 builds: the main raid and dungeon build from each Icy Veins
